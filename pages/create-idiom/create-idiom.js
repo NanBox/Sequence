@@ -23,7 +23,7 @@ Page({
   onTitleInput: function (event) {
     var value = event.detail.value
     this.setData({
-      title: value,
+      sequenceName: value,
       isTitleLegal: value.length > 0 ? true : false
     })
   },
