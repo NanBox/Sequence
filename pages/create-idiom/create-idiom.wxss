@@ -1,0 +1,40 @@
+@import "../../common/common.wxss";
+
+page {
+  background-color: #eee;
+}
+
+.input {
+  background-color: white;
+  font-size: 26rpx;
+  color: #1c1c1c;
+  margin: 20rpx;
+  padding: 20rpx;
+}
+
+.submit {
+  width: 100%;
+  position: fixed;
+  bottom: 40rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.submit .btn {
+  width: 690rpx;
+  line-height: 94rpx;
+  text-align: center;
+  color: white;
+  border-radius: 78rpx;
+  border: 8rpx solid #cde9ff;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.clickable {
+  background-color: #58b6ff;
+}
+
+.unclickable {
+  background-color: #cde9ff;
+}

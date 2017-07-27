@@ -1,0 +1,32 @@
+@import "../../common/common.wxss";
+
+page {
+  background-color: #eee;
+}
+
+.my-sequence {
+  color: gray;
+  font-size: 32rpx;
+  margin: 20rpx;
+}
+
+.sequence {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 20rpx;
+  background: white;
+  height: 100rpx;
+  padding-left: 20rpx;
+}
+
+.sequence .sequence-name {
+  color: #1c1c1c;
+  font-size: 28rpx;
+}
+
+.sequence .lastIdiom {
+  color: gray;
+  font-size: 22rpx;
+  margin-top: 12rpx;
+}

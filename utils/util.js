@@ -16,6 +16,40 @@ function formatNumber(n) {
   return n[1] ? n : '0' + n
 }
 
+//是否全是汉字
+function isChinese(str) {
+  var reg = new RegExp("^[\u4E00-\u9FA5]+$")
+  return reg.test(str)
+}
+
+//显示加载提示框
+function showLoading() {
+  if (wx.showLoading) {
+    wx.showLoading({
+      title: "加载中",
+      mask: true
+    })
+  } else {
+    wx.showToast({
+      title: '加载中',
+      icon: 'loading',
+      mask: true,
+      duration: 10000
+    })
+  }
+}
+//隐藏加载提示框
+function hideLoading() {
+  if (wx.hideLoading) {
+    wx.hideLoading()
+  } else {
+    wx.hideToast()
+  }
+}
+
 module.exports = {
-  formatTime: formatTime
+  formatTime: formatTime,
+  isChinese: isChinese,
+  showLoading: showLoading,
+  hideLoading: hideLoading
 }

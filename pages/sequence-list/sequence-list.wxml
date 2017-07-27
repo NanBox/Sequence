@@ -1,0 +1,10 @@
+<import src="../../common/common.wxml" />
+
+<view class="my-sequence">我参与的接龙</view>
+<view wx:for="{{sequenceList}}" wx:key="{{item.id}}" class="sequence" bindtap="navigateToIdiomList" id="{{item.id}}">
+  <view class="sequence-name">{{item.title}}</view>
+  <view class="lastIdiom">{{item.idiomCount}} {{item.lastIdiom}}</view>
+</view>
+<button class="create-button" bindtap="createSequence">
+    <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
+</button>
