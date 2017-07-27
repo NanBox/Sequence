@@ -1,66 +1,37 @@
-// pages/sequence/sequence.js
+const AV = require('../../utils/av-weapp-min')
+var util = require('../../utils/util.js')
+
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-  
+    id: "",
+    idiomList: []
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+    console.log(options)
+    this.data.id = options.id
+    this.getIdioms()
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-  
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-  
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-  
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-  
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-  
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-  
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-  
+  getIdioms() {
+    var that = this
+    var Sequence = AV.Object.createWithoutData('Sequence', this.data.id)
+    console.log(Sequence)
+    var query = new AV.Query('Idiom');
+    query.equalTo('dependent', Sequence);
+    query.find().then(function (idiomList) {
+      console.log(idiomList)
+      that.setData({
+        idiomList: idiomList
+      })
+    })
   }
+
 })

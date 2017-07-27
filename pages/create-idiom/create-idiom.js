@@ -7,8 +7,8 @@ Page({
    * 页面的初始数据
    */
   data: {
-    title: "",
-    idiom: "",
+    sequenceName: "",
+    firstIdiom: "",
     isTitleLegal: false,
     isIdiomLegal: false
   },
@@ -31,7 +31,7 @@ Page({
   onIdiomInput: function (event) {
     var value = event.detail.value
     this.setData({
-      idiom: value,
+      firstIdiom: value,
       isIdiomLegal: value.length == 4 && util.isChinese(value) ? true : false
     })
   },
@@ -40,19 +40,19 @@ Page({
     var user = AV.User.current()
 
     var sequence = new AV.Object('Sequence')
-    sequence.set('title', this.data.title)
+    sequence.set('sequenceName', this.data.sequenceName)
     sequence.set('createUserId', user.get("authData").lc_weapp.openid)
     sequence.set('createUserName', user.get("nickName"))
     sequence.set('createUserImg', user.get("avatarUrl"))
-    sequence.set('lastIdiom', this.data.idiom)
+    sequence.set('lastIdiom', this.data.firstIdiom)
     sequence.set('idiomCount', 1)
 
     var idiom = new AV.Object('Idiom')
-    idiom.set('value', this.data.idiom)
+    idiom.set('value', this.data.firstIdiom)
     idiom.set('createUserId', user.get("authData").lc_weapp.openid)
     idiom.set('createUserName', user.get("nickName"))
     idiom.set('createUserImg', user.get("avatarUrl"))
-    idiom.set('sequenceTitle', this.data.title)
+    idiom.set('sequenceName', this.data.sequenceName)
     idiom.set('dependent', sequence)
 
     //检查是否已建立联系
@@ -82,7 +82,7 @@ Page({
       //成功保存记录
       console.log("成功创建接龙")
       console.log(res)
-      getApp().globalData.refreshMainPage = true
+      getApp().globalData.refreshSequenceList = true
       wx.showToast({
         title: '创建成功'
       })

@@ -33,6 +33,6 @@ App({
   globalData: {
     shareTicket: "",
     updateUserSuccess: false,
-    refreshMainPage: false
+    refreshSequenceList: false
   }
 })

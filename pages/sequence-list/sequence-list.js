@@ -41,6 +41,15 @@ Page({
 
   },
 
+  onShow: function (options) {
+    var app = getApp()
+    var refreshSequenceList = app.globalData.refreshSequenceList
+    if (refreshSequenceList) {
+      app.globalData.refreshSequenceList = false
+      this.getMySequences()
+    }
+  },
+
   getMySequences: function () {
     util.showLoading()
     var that = this
@@ -83,10 +92,11 @@ Page({
   },
 
   /**
-    * 跳转创建接龙页面
+    * 跳转接龙详情页面
     */
   navigateToIdiomList: function (event) {
-    var id = event.currentTarget.id
+    var index = event.currentTarget.id
+    var id = this.data.sequenceList[index].id
     wx.navigateTo({
       url: '/pages/idiom-list/idiom-list?id=' + id
     })

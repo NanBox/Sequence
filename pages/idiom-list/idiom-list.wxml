@@ -1,2 +1,1 @@
-<!--pages/sequence/sequence.wxml-->
-<text>pages/sequence/sequence.wxml</text>
+<import src="../../common/common.wxml" />
