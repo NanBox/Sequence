@@ -6,7 +6,8 @@ var app = getApp()
 Page({
   data: {
     sequenceList: [],
-    canShowEmpty: false
+    canShowEmpty: false,
+    hasUserInfo: false
   },
 
   /**
@@ -71,12 +72,15 @@ Page({
   * 更新用户信息
   */
   updateUserInfo: function (userInfo) {
+    var that = this
     var app = getApp()
     var user = AV.User.current()
     user.set(userInfo).save().then(user => {
       util.hideLoading()
       app.globalData.user = AV.User.current()
-      app.globalData.updateUserSuccess = true
+      that.setData({
+        hasUserInfo: true
+      })
       console.log("更新用户信息成功")
       console.log(app.globalData.user)
     }, error => {
@@ -92,39 +96,39 @@ Page({
     var user = getApp().globalData.user
     var userId = user.get("authData").lc_weapp.openid
     // 构建 Sequence 的查询
-    var cql = "select * from Sequence where createUserId = '" + userId + "' order by updatedAt desc";
-    AV.Query.doCloudQuery(cql).then(data => {
+    var query = new AV.Query('Sequence')
+    query.equalTo('createUserId', user.get("authData").lc_weapp.openid)
+    query.descending('updatedAt')
+    // 执行查询
+    query.find().then(sequenceList => {
       util.hideLoading()
-      that.setData({
+      var that = this
+      this.setData({
         canShowEmpty: true,
-        sequenceList: data.results
+        sequenceList: sequenceList
       })
       console.log("更新接龙列表")
-      console.log(data.results)
+      console.log(sequenceList)
     }, err => {
       util.hideLoading()
       console.log("更新接龙失败")
       console.log(err)
-    });
+    })
 
-    // var query = new AV.Query('Sequence')
-    // query.equalTo('createUserId', user.get("authData").lc_weapp.openid)
-    // query.descending('updatedAt')
-    // // 执行查询
-    // query.find().then(sequenceList => {
+    // var cql = "select * from Sequence where createUserId = '" + userId + "' order by updatedAt desc";
+    // AV.Query.doCloudQuery(cql).then(data => {
     //   util.hideLoading()
-    //   var that = this
-    //   this.setData({
+    //   that.setData({
     //     canShowEmpty: true,
-    //     sequenceList: sequenceList
+    //     sequenceList: data.results
     //   })
     //   console.log("更新接龙列表")
-    //   console.log(sequenceList)
+    //   console.log(data.results)
     // }, err => {
     //   util.hideLoading()
     //   console.log("更新接龙失败")
     //   console.log(err)
-    // })
+    // });
   },
 
   /**
@@ -141,15 +145,6 @@ Page({
   /**
     * 跳转创建接龙页面
     */
-  checkUpdateUserInfo: function () {
-    var updateUserSuccess = getApp().globalData.updateUserSuccess
-    if (updateUserSuccess) {
-      this.navigateToCreate()
-    } else {
-      this.getUserInfo()
-    }
-  },
-
   navigateToCreate: function () {
     var groupId = this.data.groupId
     wx.navigateTo({
@@ -160,34 +155,13 @@ Page({
   /**
     * 获取用户信息
     */
-  getUserInfo: function () {
-    util.showLoading()
-    var that = this
-    wx.getUserInfo({
-      success: (res) => {
-        that.updateUserInfo(res.userInfo)
-        that.navigateToCreate()
-      },
-      fail: (res) => {
-        util.hideLoading()
-        console.log("获取用户信息失败")
-        console.log(res)
-        wx.showModal({
-          title: '需要您的授权才能创建接龙',
-          showCancel: false,
-          success: function (res) {
-            wx.openSetting({
-              success(res) {
-                if (!res.authSetting['scope.userInfo']) {
-                  return
-                }
-                that.getUserInfo()
-              }
-            })
-          }
-        })
-      }
-    })
+  getUserInfo: function (res) {
+    if (res.detail.userInfo) {
+      console.log("成功获取用户信息")
+      console.log(res)
+      this.updateUserInfo(res.detail.userInfo)
+      this.navigateToCreate()
+    }
   }
 
 })

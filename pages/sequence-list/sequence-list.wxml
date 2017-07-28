@@ -5,6 +5,9 @@
   <view class="sequence-name">{{item.sequenceName}}</view>
   <view class="lastIdiom">{{item.idiomCount}} {{item.lastIdiom}}</view>
 </view>
-<button class="create-button" bindtap="checkUpdateUserInfo">
+<button wx:if="{{hasUserInfo}}" class="create-button" bindtap="navigateToCreate">
+    <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
+</button>
+<button wx:else class="create-button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
     <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
 </button>

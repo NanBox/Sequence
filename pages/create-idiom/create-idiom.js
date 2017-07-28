@@ -37,6 +37,7 @@ Page({
   },
 
   submit: function () {
+    var that = this
     var user = AV.User.current()
 
     var sequence = new AV.Object('Sequence')
@@ -53,29 +54,7 @@ Page({
     idiom.set('createUserName', user.get("nickName"))
     idiom.set('createUserImg', user.get("avatarUrl"))
     idiom.set('sequenceName', this.data.sequenceName)
-    idiom.set('dependent', sequence)
-
-    //检查是否已建立联系
-    // var userQuery = new AV.Query('UserSequenceMap')
-    // userQuery.equalTo('user', user)
-    // var sequenceQuery = new AV.Query('UserSequenceMap')
-    // sequenceQuery.equalTo('sequence', sequence)
-    // // 组合查询
-    // var mapQuery = AV.Query.and(userQuery, sequenceQuery)
-    // mapQuery.first().then(function (userSequenceMap) {
-    //   if (userSequenceMap == null) {
-    //     //没有则建立联系
-    //     that.saveUserSequenceMap(user, sequence)
-    //   } else {
-    //     util.hideLoading()
-    //   }
-    // }, function (err) {
-    //   util.hideLoading()
-    //   // 处理调用失败
-    //   console.log("查找用户、接龙关系失败")
-    //   console.log(err)
-    // })
-    
+    idiom.set('sequence', sequence)
 
     idiom.save().then(function (res) {
       util.hideLoading()
@@ -86,6 +65,25 @@ Page({
       wx.showToast({
         title: '创建成功'
       })
+      // 保存我参与的接龙
+      var mySequenceMap = user.get("mySequenceMap")
+      if (mySequenceMap == null) {
+        mySequenceMap = new Map()
+      } else {
+        mySequenceMap = new Map(mySequenceMap)
+      }
+      mySequenceMap.set(res.get("sequence").id, that.data.sequenceName)
+      user.set("mySequenceMap", [...mySequenceMap]).save().then(user => {
+        util.hideLoading()
+        getApp().globalData.user = AV.User.current()
+        console.log("保存我参与的接龙")
+        console.log(getApp().globalData.user)
+      }, error => {
+        util.hideLoading()
+        console.log("保存我参与的接龙失败")
+        console.log(error)
+      }).catch(console.error)
+
       setTimeout(function () {
         wx.navigateBack({
           delta: 1
