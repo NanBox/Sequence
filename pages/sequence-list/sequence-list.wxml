@@ -5,6 +5,6 @@
   <view class="sequence-name">{{item.sequenceName}}</view>
   <view class="lastIdiom">{{item.idiomCount}} {{item.lastIdiom}}</view>
 </view>
-<button class="create-button" bindtap="createSequence">
+<button class="create-button" bindtap="checkUpdateUserInfo">
     <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
 </button>
