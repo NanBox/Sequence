@@ -10,7 +10,8 @@ Page({
     id: "",
     sequence: null,
     idiomList: [],
-    hasUserInfo: false
+    hasUserInfo: false,
+    isCreater: false
   },
 
   /**
@@ -19,11 +20,13 @@ Page({
   onLoad: function (options) {
     this.data.id = options.id
     var app = getApp()
+    this.setData({
+      hasUserInfo: app.globalData.hasUserInfo
+    })
     if (!app.globalData.hasLogin) {
       app.login(this.loginSuccess, this.updateUserSuccess)
-    } else {
-      this.getIdioms()
     }
+    this.getIdioms()
     //转发可获取转发目标信息
     wx.showShareMenu({
       withShareTicket: true
@@ -31,25 +34,62 @@ Page({
   },
 
   loginSuccess: function () {
-    this.getIdioms()
+
   },
 
   updateUserSuccess: function () {
     this.setData({
       hasUserInfo: true
     })
+    getApp().globalData.hasUserInfo = true
+  },
+
+  setChallenger: function () {
+    var that = this
+    var sequence = this.data.sequence
+    if (sequence.get("challengerId") == "") {
+      var app = getApp()
+      var user = app.globalData.user
+      sequence.set('challengerId', user.get("authData").lc_weapp.openid)
+      sequence.set('challengerName', user.get("nickName"))
+      sequence.set('challengerImg', user.get("avatarUrl"))
+      sequence.save().then(function (res) {
+        console.log("保存挑战者")
+        console.log(res)
+      }, function (error) {
+        console.log("保存挑战者失败")
+        console.log(error)
+      }).catch(console.error)
+    }
+    this.setData({
+      sequence: sequence
+    })
   },
 
   getIdioms() {
     var that = this
     var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
+    var app = getApp()
+    var user = app.globalData.user
 
     sequence.fetch().then(function () {
       console.log("获取接龙实例")
       console.log(sequence)
+      that.data.sequence = sequence
+
       that.setData({
-        sequence: sequence
+        isCreater: sequence.get("createrId") != user.get("authData").lc_weapp.openid
       })
+
+      if (that.data.isCreater &&
+        sequence.get("challengerId").length == 0 &&
+        that.data.hasUserInfo) {
+        that.setChallenger()
+      } else {
+        that.setData({
+          sequence: sequence
+        })
+      }
     }, function (error) {
       console.log("获取接龙实例失败")
       console.log(error)
@@ -62,6 +102,26 @@ Page({
       that.setData({
         idiomList: idiomList
       })
+    })
+  },
+
+  /**
+  * 获取用户信息
+  */
+  getUserInfo: function (res) {
+    var app = getApp()
+    if (res.detail.userInfo) {
+      console.log("成功获取用户信息")
+      console.log(res)
+      app.updateUserInfo(res.detail.userInfo, this.updateUserSuccess)
+      this.navigateToCreate()
+    }
+  },
+
+  updateUserSuccess: function () {
+    this.setChallenger()
+    this.setData({
+      hasUserInfo: true
     })
   },
 

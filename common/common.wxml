@@ -94,7 +94,7 @@ studentNum: 学生人数
 <template name="dynamic-item">
   <block wx:for-items="{{dynamicList}}" wx:for-item="dynamic" wx:key="{{dynamic.id}}">
     <view class="dynamic-item">
-      <template is="user-info-template" data="{{userImg:dynamic.createUserImg,name: dynamic.createUserName,sendTime:dynamic.createTime}}"></template>
+      <template is="user-info-template" data="{{userImg:dynamic.createrImg,name: dynamic.createrName,sendTime:dynamic.createTime}}"></template>
 <view wx:if="{{dynamic.flowTypeKey=='TD_AN_A_DT_TD'}}" class="dynamic-content-container">
 
   <!--动态的内容部分-->
@@ -121,7 +121,7 @@ studentNum: 学生人数
       <image class="star-icon" src="{{dynamic.likeStatus==1? '/images/star.png': '/images/unstar.png' }}"></image>
       <label class="star-num-text">{{dynamic.likeCount==0 ? '赞':dynamic.likeCount}}</label>
     </view>
-    <label wx:if="{{canDel && currentUserId== dynamic.createUserId}}" class="action-dynamic-del" bindtap="delActionDynamic" data-dynamic-id="{{dynamic.id}}" data-project-item-id="{{dynamic.recordId}}">删除</label>
+    <label wx:if="{{canDel && currentUserId== dynamic.createrId}}" class="action-dynamic-del" bindtap="delActionDynamic" data-dynamic-id="{{dynamic.id}}" data-project-item-id="{{dynamic.recordId}}">删除</label>
   </view>
   <view class="avater-and-comment">
     <view class="star-user-avatar-container">
@@ -146,7 +146,7 @@ studentNum: 学生人数
     </view>
     <view wx:if="{{dynamic.briefCommentList!=null&&dynamic.briefCommentList.length>0}}">
       <block wx:for-items="{{(!dynamic.showAllComment) ?dynamic.briefCommentList: dynamic.commentList}}" wx:for-item="commentItem">
-        <view class="comment-content-container" bindtap="commentDynamic" data-item-id="{{dynamic.id}}" data-reply-user-name="{{commentItem.userName}}" data-reply-id="{{commentItem.dynamicId}}" data-reply-user-id="{{commentItem.createUserId}}">
+        <view class="comment-content-container" bindtap="commentDynamic" data-item-id="{{dynamic.id}}" data-reply-user-name="{{commentItem.userName}}" data-reply-id="{{commentItem.dynamicId}}" data-reply-user-id="{{commentItem.createrId}}">
           <view class="comment-user-name-container">
             <label class="comment-user-name">{{commentItem.userName}}</label>
             <label wx:if="{{commentItem.replyUserName!=null && commentItem.replyUserName !=''}}" style="font-size:24rpx;white-space:nowrap;">回复</label>

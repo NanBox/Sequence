@@ -1,17 +1,25 @@
 <import src="../../common/common.wxml" />
 
 <view class="idiom" wx:for="{{idiomList}}">
-  <view class="num">{{index+1}}</view>
+  <view class="num">{{item.idiomNum}}</view>
   <view class="value">{{item.value}}</view>
-  <image class="creater-img" src="{{item.createUserImg}}" mode="aspectFit" />
+  <image class="creater-img" src="{{item.createrImg}}" mode="aspectFit" />
 </view>
 
 <view class="bottom">
-  <button class="button">
-  <image class="member-img" src="{{sequence.createUserImg}}" mode="aspectFit" />
-  </button>
+
+  <image class="createrImg" src="{{sequence.createrImg}}" mode="aspectFit" />
+
   <view class="vs">VS</view>
-  <button class="button" open-type="share">
-    <image class="member-img" src="{{sequence.challengerImg!=null?sequence.challengerImg:'/images/icon_add.png'}}" mode="aspectFit"/>
+
+  <button wx:if="{{!isCreater&&!hasUserInfo}}" class="button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
+    <image class="member-img" src="/images/icon_add.png" mode="aspectFit"/>
+</button>
+  <button wx:elif="{{sequence.challengerImg==null}}" class="button" open-type="share">
+    <image class="member-img" src="/images/icon_add.png" mode="aspectFit"/>
   </button>
+  <button wx:else class="button">
+    <image class="member-img" src="{{sequence.challengerImg}}" mode="aspectFit"/>
+</button>
+
 </view>

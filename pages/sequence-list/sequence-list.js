@@ -22,10 +22,6 @@ Page({
       withShareTicket: true
     })
 
-    // AV.Cloud.run('pinyin', { hanzi: "成语接龙" }).then(function (data) {
-    //   console.log(data)
-    // })
-
   },
 
   onShow: function (options) {
@@ -54,7 +50,7 @@ Page({
     var userId = user.get("authData").lc_weapp.openid
     // 构建 Sequence 的查询
     var query = new AV.Query('Sequence')
-    query.equalTo('createUserId', user.get("authData").lc_weapp.openid)
+    query.equalTo('createrId', user.get("authData").lc_weapp.openid)
     query.descending('updatedAt')
     // 执行查询
     query.find().then(sequenceList => {
@@ -102,7 +98,7 @@ Page({
     if (res.detail.userInfo) {
       console.log("成功获取用户信息")
       console.log(res)
-      app.updateUserInfo(res.detail.userInfo)
+      app.updateUserInfo(res.detail.userInfo, this.updateUserSuccess)
       this.navigateToCreate()
     }
   }
