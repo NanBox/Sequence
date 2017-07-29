@@ -42,6 +42,7 @@ Page({
 
     var sequence = new AV.Object('Sequence')
     sequence.set('sequenceName', this.data.sequenceName)
+    sequence.set('type', 'two')
     sequence.set('createUserId', user.get("authData").lc_weapp.openid)
     sequence.set('createUserName', user.get("nickName"))
     sequence.set('createUserImg', user.get("avatarUrl"))

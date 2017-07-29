@@ -14,39 +14,8 @@ Page({
     * 生命周期函数--监听页面加载
     */
   onLoad: function () {
-    var that = this
     var app = getApp()
-    // 登录
-    util.showLoading()
-    AV.User.loginWithWeapp().then(user => {
-      app.globalData.user = AV.User.current()
-      console.log("登录成功")
-      console.log(app.globalData.user)
-      // 判断用户信息是否已授权
-      wx.getSetting({
-        success: res => {
-          if (!res.authSetting['scope.userInfo']) {
-            return
-          }
-          // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-          wx.getUserInfo({
-            success: res => {
-              // 更新用户信息
-              that.updateUserInfo(res.userInfo)
-            }
-          })
-        }
-      })
-      that.getMySequences()
-      var shareTicket = app.globalData.shareTicket
-      if (shareTicket.length > 0) {
-        // that.getShareInfo(shareTicket)
-      }
-    }, err => {
-      util.hideLoading()
-      console.log("登录失败")
-      console.log(error)
-    }).catch(console.error)
+    app.login(this.loginSuccess, this.updateUserSuccess)
 
     //可获取转发目标信息
     wx.showShareMenu({
@@ -68,26 +37,14 @@ Page({
     }
   },
 
-  /**
-  * 更新用户信息
-  */
-  updateUserInfo: function (userInfo) {
-    var that = this
-    var app = getApp()
-    var user = AV.User.current()
-    user.set(userInfo).save().then(user => {
-      util.hideLoading()
-      app.globalData.user = AV.User.current()
-      that.setData({
-        hasUserInfo: true
-      })
-      console.log("更新用户信息成功")
-      console.log(app.globalData.user)
-    }, error => {
-      util.hideLoading()
-      console.log("更新用户信息失败")
-      console.log(error)
-    }).catch(console.error)
+  loginSuccess: function () {
+    this.getMySequences()
+  },
+
+  updateUserSuccess: function () {
+    this.setData({
+      hasUserInfo: true
+    })
   },
 
   getMySequences: function () {
@@ -114,21 +71,6 @@ Page({
       console.log("更新接龙失败")
       console.log(err)
     })
-
-    // var cql = "select * from Sequence where createUserId = '" + userId + "' order by updatedAt desc";
-    // AV.Query.doCloudQuery(cql).then(data => {
-    //   util.hideLoading()
-    //   that.setData({
-    //     canShowEmpty: true,
-    //     sequenceList: data.results
-    //   })
-    //   console.log("更新接龙列表")
-    //   console.log(data.results)
-    // }, err => {
-    //   util.hideLoading()
-    //   console.log("更新接龙失败")
-    //   console.log(err)
-    // });
   },
 
   /**
@@ -156,10 +98,11 @@ Page({
     * 获取用户信息
     */
   getUserInfo: function (res) {
+    var app = getApp()
     if (res.detail.userInfo) {
       console.log("成功获取用户信息")
       console.log(res)
-      this.updateUserInfo(res.detail.userInfo)
+      app.updateUserInfo(res.detail.userInfo)
       this.navigateToCreate()
     }
   }

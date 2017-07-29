@@ -1,1 +1,17 @@
 <import src="../../common/common.wxml" />
+
+<view class="idiom" wx:for="{{idiomList}}">
+  <view class="num">{{index+1}}</view>
+  <view class="value">{{item.value}}</view>
+  <image class="creater-img" src="{{item.createUserImg}}" mode="aspectFit" />
+</view>
+
+<view class="bottom">
+  <button class="button">
+  <image class="member-img" src="{{sequence.createUserImg}}" mode="aspectFit" />
+  </button>
+  <view class="vs">VS</view>
+  <button class="button" open-type="share">
+    <image class="member-img" src="{{sequence.challengerImg!=null?sequence.challengerImg:'/images/icon_add.png'}}" mode="aspectFit"/>
+  </button>
+</view>

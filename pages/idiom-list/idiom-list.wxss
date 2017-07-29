@@ -1,1 +1,67 @@
-/* pages/sequence/sequence.wxss */
+@import "../../common/common.wxss";
+
+page {
+  background-color: #eee;
+}
+
+.idiom {
+  height: 100rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: white;
+  margin: 20rpx;
+}
+
+.idiom .num {
+  font-size: 28rpx;
+  color: #1c1c1c;
+  margin-left: 40rpx;
+}
+
+.idiom .value {
+  font-size: 28rpx;
+  color: #1c1c1c;
+  margin-left: 40rpx;
+}
+
+.idiom .creater-img {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 100%;
+  margin-left: 40rpx;
+}
+
+.bottom {
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100rpx;
+  bottom: 0;
+  background-color: white;
+  font-size: 30rpx;
+}
+
+.bottom .button {
+  width: 80rpx;
+  height: 80rpx;
+  margin-left: 80rpx;
+  margin-right: 80rpx;
+  background-color: blue;
+  border-radius: 100%;
+  padding: 0;
+}
+
+.bottom .button .member-img {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.bottom .vs {
+  font-size: 32rpx;
+  color: #1c1c1c;
+  font-weight: bold;
+}

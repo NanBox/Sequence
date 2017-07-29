@@ -38,3 +38,14 @@ page {
 .unclickable {
   background-color: #cde9ff;
 }
+
+.bottom {
+  position: fixed;
+  width: 100%;
+  height: 90rpx;
+  bottom: 0;
+  text-align: center;
+  line-height: 90rpx;
+  background-color: white;
+  font-size: 30rpx;
+}
