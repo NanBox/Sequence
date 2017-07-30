@@ -43,23 +43,28 @@ Page({
     AV.Cloud.run('pinyin', { hanzi: this.data.firstIdiom }).then(function (pinyin) {
       console.log("转换拼音")
       console.log(pinyin)
+      var creater = {
+        id: user.get("authData").lc_weapp.openid,
+        name: user.get("nickName"),
+        img: user.get("avatarUrl")
+      }
+      var challenger = {
+        id: "",
+        name: "",
+        img: ""
+      }
       var sequence = new AV.Object("Sequence")
       sequence.set("sequenceName", that.data.sequenceName)
       sequence.set("type", "two")
-      sequence.set("createrId", user.get("authData").lc_weapp.openid)
-      sequence.set("createrName", user.get("nickName"))
-      sequence.set("createrImg", user.get("avatarUrl"))
-      sequence.set("challengerId", "")
-      sequence.set("challengerName", "")
-      sequence.set("challengerImg", "")
+      sequence.set("creater", creater)
+      sequence.set("challenger", challenger)
       sequence.set("lastIdiom", that.data.firstIdiom)
+      sequence.set("lastIdiomCreater", creater)
       sequence.set("idiomCount", 1)
 
       var idiom = new AV.Object("Idiom")
       idiom.set("value", that.data.firstIdiom)
-      idiom.set("createrId", user.get("authData").lc_weapp.openid)
-      idiom.set("createrName", user.get("nickName"))
-      idiom.set("createrImg", user.get("avatarUrl"))
+      idiom.set("creater", creater)
       idiom.set("sequenceName", that.data.sequenceName)
       idiom.set("pinyin", pinyin)
       idiom.set("idiomNum", 1)
@@ -74,24 +79,45 @@ Page({
         wx.showToast({
           title: '创建成功'
         })
+
+
+        var userSequenceMap = new AV.Object('UserSequenceMap')
+        userSequenceMap.set('user', user)
+        userSequenceMap.set('sequence', sequence)
+        userSequenceMap.save().then(function (res) {
+          // 成功保存
+          console.log("建立用户和接龙的关系")
+          console.log(res)
+        }, function (error) {
+          util.hideLoading()
+          // 异常处理
+          console.log("建立用户和接龙的关系失败")
+          console.error(error.message)
+        })
+
+
         // 保存我参与的接龙
-        var mySequenceMap = user.get("mySequenceMap")
-        if (mySequenceMap == null) {
-          mySequenceMap = new Map()
-        } else {
-          mySequenceMap = new Map(mySequenceMap)
-        }
-        mySequenceMap.set(res.get("sequence").id, that.data.sequenceName)
-        user.set("mySequenceMap", [...mySequenceMap]).save().then(user => {
-          util.hideLoading()
-          getApp().globalData.user = AV.User.current()
-          console.log("保存我参与的接龙")
-          console.log(getApp().globalData.user)
-        }, error => {
-          util.hideLoading()
-          console.log("保存我参与的接龙失败")
-          console.log(error)
-        }).catch(console.error)
+        // var mySequenceMap = user.get("mySequenceMap")
+        // if (mySequenceMap == null) {
+        //   mySequenceMap = new Map()
+        // } else {
+        //   mySequenceMap = new Map(mySequenceMap)
+        // }
+        // mySequenceMap.set(res.get("sequence").id, that.data.sequenceName)
+        // user.set("mySequenceMap", [...mySequenceMap]).save().then(user => {
+        //   util.hideLoading()
+        //   getApp().globalData.user = AV.User.current()
+        //   console.log("保存我参与的接龙")
+        //   console.log(getApp().globalData.user)
+        // }, error => {
+        //   util.hideLoading()
+        //   console.log("保存我参与的接龙失败")
+        //   console.log(error)
+        // }).catch(console.error)
+
+
+
+
 
         setTimeout(function () {
           wx.navigateBack({
@@ -103,7 +129,7 @@ Page({
         console.log("创建接龙失败")
         console.log(error)
       }).catch(console.error)
-    
+
     }, function (error) {
       util.hideLoading()
       console.log("转换拼音失败")

@@ -47,15 +47,18 @@ Page({
     util.showLoading()
     var that = this
     var user = getApp().globalData.user
-    var userId = user.get("authData").lc_weapp.openid
-    // 构建 Sequence 的查询
-    var query = new AV.Query('Sequence')
-    query.equalTo('createrId', user.get("authData").lc_weapp.openid)
-    query.descending('updatedAt')
+    // 构建 UserSequenceMap 的查询
+    var query = new AV.Query('UserSequenceMap')
+    query.equalTo('user', user)
+    query.descending('createdAt')
+    query.include(['sequence'])
     // 执行查询
-    query.find().then(sequenceList => {
-      util.hideLoading()
+    query.find().then(userSequenceMapList => {
       var that = this
+      var sequenceList = []
+      userSequenceMapList.forEach(function (userSequenceMap) {
+        sequenceList.push(userSequenceMap.get("sequence"))
+      })
       this.setData({
         canShowEmpty: true,
         sequenceList: sequenceList
@@ -67,6 +70,30 @@ Page({
       console.log("更新接龙失败")
       console.log(err)
     })
+
+    // var query = new AV.Query('Sequence')
+    // var creater = {
+    //   id: user.get("authData").lc_weapp.openid,
+    //   name: user.get("nickName"),
+    //   img: user.get("avatarUrl")
+    // }
+    // query.equalTo('creater', creater)
+    // query.descending('updatedAt')
+    // // 执行查询
+    // query.find().then(sequenceList => {
+    //   util.hideLoading()
+    //   var that = this
+    //   this.setData({
+    //     canShowEmpty: true,
+    //     sequenceList: sequenceList
+    //   })
+    //   console.log("更新接龙列表")
+    //   console.log(sequenceList)
+    // }, err => {
+    //   util.hideLoading()
+    //   console.log("更新接龙失败")
+    //   console.log(err)
+    // })
   },
 
   /**

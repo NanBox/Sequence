@@ -1,16 +1,16 @@
 <import src="../../common/common.wxml" />
 
-<template is="search-bar" />
+<template wx:if="{{showInput}}" is="search-bar" />
 
 <view class="idiom" wx:for="{{idiomList}}">
   <view class="num">{{item.idiomNum}}</view>
   <view class="value">{{item.value}}</view>
-  <image class="creater-img" src="{{item.createrImg}}" mode="aspectFit" />
+  <image class="creater-img" src="{{item.creater.img}}" mode="aspectFit" />
 </view>
 
 <view class="bottom">
 
-  <image class="createrImg" src="{{sequence.createrImg}}" mode="aspectFit" />
+  <image class="createrImg" src="{{sequence.creater.img}}" mode="aspectFit" />
 
   <view class="vs">VS</view>
 
@@ -21,7 +21,7 @@
     <image class="member-img" src="/images/icon_add.png" mode="aspectFit"/>
   </button>
   <button wx:else class="button">
-    <image class="member-img" src="{{sequence.challengerImg}}" mode="aspectFit"/>
+    <image class="member-img" src="{{sequence.challenger.img}}" mode="aspectFit"/>
 </button>
 
 </view>

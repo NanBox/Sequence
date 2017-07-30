@@ -12,6 +12,7 @@ Page({
     idiomList: [],
     hasUserInfo: false,
     isCreater: false,
+    showInput: false,
     inputIdiom: "",
     inputIdiomPinyin: []
   },
@@ -78,12 +79,17 @@ Page({
       console.log("获取接龙实例")
       console.log(sequence)
       that.data.sequence = sequence
+      var userId = user.get("authData").lc_weapp.openid
+      var isCreater = sequence.get("creater").id == userId
+      var isChallenger = sequence.get("challenger").id == userId
+      var showInput = (isCreater || isChallenger) && sequence.get("lastIdiomCreater").id != userId
 
       that.setData({
-        isCreater: sequence.get("createrId") != user.get("authData").lc_weapp.openid
+        showInput: showInput,
+        isCreater: isCreater
       })
 
-      if (that.data.isCreater &&
+      if (!isCreater &&
         sequence.get("challengerId").length == 0 &&
         that.data.hasUserInfo) {
         that.setChallenger()
@@ -100,6 +106,7 @@ Page({
     var query = new AV.Query('Idiom')
     query.equalTo('sequence', sequence)
     query.find().then(function (idiomList) {
+      console.log("获取成语")
       console.log(idiomList)
       that.setData({
         idiomList: idiomList
@@ -173,11 +180,53 @@ Page({
     var that = this
     var user = getApp().globalData.user
     var sequence = this.data.sequence
+    var idiomList = thsi.idiomList
+
+    var creater = {
+      id: user.get("authData").lc_weapp.openid,
+      name: user.get("nickName"),
+      img: user.get("avatarUrl")
+    }
+
+    var userQuery = new AV.Query('UserSequenceMap')
+    userQuery.equalTo('user', user)
+    var groupQuery = new AV.Query('UserSequenceMap')
+    sequenceQuery.equalTo('sequence', sequence)
+    // 组合查询
+    var mapQuery = AV.Query.and(userQuery, sequenceQuery)
+    mapQuery.first().then(function (userSequenceMap) {
+      if (userSequenceMap == null) {
+        //没有则建立联系
+        var userSequenceMap = new AV.Object('UserSequenceMap')
+        userSequenceMap.set('user', user)
+        userSequenceMap.set('sequence', sequence)
+        userSequenceMap.save().then(function (res) {
+          // 成功保存
+          console.log("建立用户和接龙的关系")
+          console.log(res)
+        }, function (error) {
+          util.hideLoading()
+          // 异常处理
+          console.log("建立用户和接龙的关系失败")
+          console.error(error.message)
+        })
+      } else {
+        util.hideLoading()
+      }
+    }, function (err) {
+      util.hideLoading()
+      // 处理调用失败
+      console.log("查找用户、群关系失败")
+      console.log(err)
+    })
+
+    sequence.set("lastIdiom", this.data.inputIdiom)
+    sequence.set("lastIdiomCreater", creater)
+    sequence.set("idiomCount", idiomList)
+
     var idiom = new AV.Object("Idiom")
     idiom.set("value", this.data.inputIdiom)
-    idiom.set("createrId", user.get("authData").lc_weapp.openid)
-    idiom.set("createrName", user.get("nickName"))
-    idiom.set("createrImg", user.get("avatarUrl"))
+    idiom.set("creater", creater)
     idiom.set("sequenceName", sequence.get("sequenceName"))
     idiom.set("pinyin", that.data.inputIdiomPinyin)
     idiom.set("idiomNum", that.data.idiomList.length)
