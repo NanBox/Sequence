@@ -11,7 +11,9 @@ Page({
     sequence: null,
     idiomList: [],
     hasUserInfo: false,
-    isCreater: false
+    isCreater: false,
+    inputIdiom: "",
+    inputIdiomPinyin: []
   },
 
   /**
@@ -123,6 +125,78 @@ Page({
     this.setData({
       hasUserInfo: true
     })
+  },
+
+  onInput: function (e) {
+    this.data.inputIdiom = e.detail.value
+  },
+
+  onSubmit: function () {
+    var that = this
+    var idiom = this.data.inputIdiom
+    var idiomList = this.data.idiomList
+    var lastIdiom = idiomList[idiomList.length - 1]
+    if (idiom.length == 4 && util.isChinese(idiom)) {
+      AV.Cloud.run('pinyin', { hanzi: idiom }).then(function (pinyin) {
+        that.data.inputIdiomPinyin = pinyin
+        console.log("转换拼音")
+        console.log(pinyin)
+        console.log(that.checkPinyin(pinyin[0], lastIdiom.get("pinyin")[3]))
+        if (that.checkPinyin(pinyin[0], lastIdiom.get("pinyin")[3])) {
+          that.saveIdiom()
+        } else {
+          wx.showModal({
+            content: "你确定能接上？",
+          })
+        }
+      })
+    } else {
+      wx.showModal({
+        content: "请输入四字成语",
+      })
+    }
+  },
+
+  checkPinyin(pinyin1, pinyin2) {
+    var canConnect = false
+    pinyin1.forEach(function (value1) {
+      pinyin2.forEach(function (value2) {
+        if (value1 == value2) {
+          canConnect = true
+        }
+      })
+    })
+    return canConnect
+  },
+
+  saveIdiom: function () {
+    var that = this
+    var user = getApp().globalData.user
+    var sequence = this.data.sequence
+    var idiom = new AV.Object("Idiom")
+    idiom.set("value", this.data.inputIdiom)
+    idiom.set("createrId", user.get("authData").lc_weapp.openid)
+    idiom.set("createrName", user.get("nickName"))
+    idiom.set("createrImg", user.get("avatarUrl"))
+    idiom.set("sequenceName", sequence.get("sequenceName"))
+    idiom.set("pinyin", that.data.inputIdiomPinyin)
+    idiom.set("idiomNum", that.data.idiomList.length)
+    idiom.set("sequence", sequence)
+
+    idiom.save().then(function (res) {
+      //成功保存记录
+      console.log("保存成语")
+      console.log(res)
+      getApp().globalData.refreshSequenceList = true
+      wx.showToast({
+        title: '创建成功'
+      })
+      that.getIdioms()
+    }, function (error) {
+      util.hideLoading()
+      console.log("保存成语失败")
+      console.log(error)
+    }).catch(console.error)
   },
 
   /**

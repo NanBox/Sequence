@@ -59,7 +59,6 @@ page {
   height: 80rpx;
   margin-left: 80rpx;
   margin-right: 80rpx;
-  background-color: gray;
   border-radius: 100%;
   padding: 0;
 }

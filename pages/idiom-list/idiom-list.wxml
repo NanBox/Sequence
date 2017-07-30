@@ -1,5 +1,7 @@
 <import src="../../common/common.wxml" />
 
+<template is="search-bar" />
+
 <view class="idiom" wx:for="{{idiomList}}">
   <view class="num">{{item.idiomNum}}</view>
   <view class="value">{{item.value}}</view>

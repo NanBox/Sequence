@@ -1,5 +1,3 @@
-<!--公告模板-->
-
 <!--搜索框-->
 <template name="search-bar">
   <view class="search-bar">
@@ -7,11 +5,12 @@
       <view class="search-content">
         <view class="search-input">
           <image class="icon" mode="aspectFill" src="/images/icon_search.png"></image>
-          <input class="input" focus="true" confirm-type="search" bindinput="onInput" bindconfirm="onSearch" placeholder="搜索" />
+          <input class="input" focus="true"  maxlength="4" bindinput="onInput" bindconfirm="onSubmit" placeholder="搜索" />
           <button class="search-cancle" form-type="reset">
-            <image class="cancel-icon" src="/images/cancel.png" mode="aspectFit" />
+            <image class="cancel-icon" src="/images/icon_cancel.png" mode="aspectFit" />
           </button>
         </view>
+      <view bindtap="onSubmit">接</view>
       </view>
     </form>
   </view>
