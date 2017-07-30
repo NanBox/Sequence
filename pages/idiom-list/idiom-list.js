@@ -28,8 +28,9 @@ Page({
     })
     if (!app.globalData.hasLogin) {
       app.login(this.loginSuccess, this.updateUserSuccess)
+    } else {
+      this.getIdioms()
     }
-    this.getIdioms()
     //转发可获取转发目标信息
     wx.showShareMenu({
       withShareTicket: true
@@ -41,24 +42,28 @@ Page({
   },
 
   updateUserSuccess: function () {
+    this.getIdioms()
     this.setData({
       hasUserInfo: true
     })
-    getApp().globalData.hasUserInfo = true
   },
 
   setChallenger: function () {
     var that = this
     var sequence = this.data.sequence
-    if (sequence.get("challengerId") == "") {
+    if (sequence.get("challenger").id.length == "") {
       var app = getApp()
       var user = app.globalData.user
-      sequence.set('challengerId', user.get("authData").lc_weapp.openid)
-      sequence.set('challengerName', user.get("nickName"))
-      sequence.set('challengerImg', user.get("avatarUrl"))
+      var challenger = {
+        id: user.get("authData").lc_weapp.openid,
+        name: user.get("nickName"),
+        img: user.get("avatarUrl")
+      }
+      sequence.set('challenger', challenger)
       sequence.save().then(function (res) {
         console.log("保存挑战者")
         console.log(res)
+        that.getIdioms()
       }, function (error) {
         console.log("保存挑战者失败")
         console.log(error)
@@ -85,12 +90,12 @@ Page({
       var showInput = (isCreater || isChallenger) && sequence.get("lastIdiomCreater").id != userId
 
       that.setData({
-        showInput: showInput,
-        isCreater: isCreater
+        isCreater: isCreater,
+        showInput: showInput
       })
 
       if (!isCreater &&
-        sequence.get("challengerId").length == 0 &&
+        sequence.get("challenger").id.length == 0 &&
         that.data.hasUserInfo) {
         that.setChallenger()
       } else {
@@ -122,12 +127,12 @@ Page({
     if (res.detail.userInfo) {
       console.log("成功获取用户信息")
       console.log(res)
-      app.updateUserInfo(res.detail.userInfo, this.updateUserSuccess)
+      app.updateUserInfo(res.detail.userInfo, this.getPremissionSuccess)
       this.navigateToCreate()
     }
   },
 
-  updateUserSuccess: function () {
+  getPremissionSuccess: function () {
     this.setChallenger()
     this.setData({
       hasUserInfo: true

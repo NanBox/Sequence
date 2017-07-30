@@ -37,6 +37,9 @@ Page({
   },
 
   submit: function () {
+    if (!(this.data.isTitleLegal && this.data.isIdiomLegal)) {
+      return
+    }
     var that = this
     var user = AV.User.current()
 
