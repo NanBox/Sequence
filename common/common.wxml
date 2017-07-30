@@ -5,7 +5,7 @@
       <view class="search-content">
         <view class="search-input">
           <image class="icon" mode="aspectFill" src="/images/icon_search.png"></image>
-          <input class="input" focus="true"  maxlength="4" bindinput="onInput" bindconfirm="onSubmit" placeholder="输入成语" />
+          <input class="input" focus="true" bindinput="onInput" bindconfirm="onSubmit" placeholder="输入成语" />
           <button class="search-cancle" form-type="reset">
             <image class="cancel-icon" src="/images/icon_cancel.png" mode="aspectFit" />
           </button>

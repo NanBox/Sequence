@@ -1,7 +1,7 @@
 <import src="../../common/common.wxml" />
 
 <input class="input" placeholder="标题" maxlength="20" bindinput="onTitleInput" />
-<input class="input" placeholder="第一个成语" maxlength="4" bindinput="onIdiomInput" />
+<input class="input" placeholder="第一个成语" bindinput="onIdiomInput" />
 <view class="submit">
   <view class="btn {{isTitleLegal && isIdiomLegal ? 'clickable' : 'unclickable'}}" bindtap="submit">
     发布

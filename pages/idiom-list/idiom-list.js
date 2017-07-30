@@ -153,7 +153,6 @@ Page({
         that.data.inputIdiomPinyin = pinyin
         console.log("转换拼音")
         console.log(pinyin)
-        console.log(that.checkPinyin(pinyin[0], lastIdiom.get("pinyin")[3]))
         if (that.checkPinyin(pinyin[0], lastIdiom.get("pinyin")[3])) {
           that.saveIdiom()
         } else {
@@ -185,7 +184,7 @@ Page({
     var that = this
     var user = getApp().globalData.user
     var sequence = this.data.sequence
-    var idiomList = thsi.idiomList
+    var idiomList = this.data.idiomList
 
     var creater = {
       id: user.get("authData").lc_weapp.openid,
@@ -195,7 +194,7 @@ Page({
 
     var userQuery = new AV.Query('UserSequenceMap')
     userQuery.equalTo('user', user)
-    var groupQuery = new AV.Query('UserSequenceMap')
+    var sequenceQuery = new AV.Query('UserSequenceMap')
     sequenceQuery.equalTo('sequence', sequence)
     // 组合查询
     var mapQuery = AV.Query.and(userQuery, sequenceQuery)
@@ -227,7 +226,7 @@ Page({
 
     sequence.set("lastIdiom", this.data.inputIdiom)
     sequence.set("lastIdiomCreater", creater)
-    sequence.set("idiomCount", idiomList)
+    sequence.set("idiomCount", idiomList.length)
 
     var idiom = new AV.Object("Idiom")
     idiom.set("value", this.data.inputIdiom)

@@ -17,7 +17,7 @@
   <button wx:if="{{!isCreater&&!hasUserInfo}}" class="button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
     <image class="member-img" src="/images/icon_add.png" mode="aspectFit"/>
 </button>
-  <button wx:elif="{{sequence.challengerImg==null}}" class="button" open-type="share">
+  <button wx:elif="{{sequence.challenger.img==''}}" class="button" open-type="share">
     <image class="member-img" src="/images/icon_add.png" mode="aspectFit"/>
   </button>
   <button wx:else class="button">
