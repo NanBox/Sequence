@@ -226,14 +226,14 @@ Page({
 
     sequence.set("lastIdiom", this.data.inputIdiom)
     sequence.set("lastIdiomCreater", creater)
-    sequence.set("idiomCount", idiomList.length)
+    sequence.set("idiomCount", idiomList.length + 1)
 
     var idiom = new AV.Object("Idiom")
     idiom.set("value", this.data.inputIdiom)
     idiom.set("creater", creater)
     idiom.set("sequenceName", sequence.get("sequenceName"))
     idiom.set("pinyin", that.data.inputIdiomPinyin)
-    idiom.set("idiomNum", that.data.idiomList.length)
+    idiom.set("idiomNum", that.data.idiomList.length + 1)
     idiom.set("sequence", sequence)
 
     idiom.save().then(function (res) {

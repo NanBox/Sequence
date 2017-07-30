@@ -10,7 +10,7 @@
             <image class="cancel-icon" src="/images/icon_cancel.png" mode="aspectFit" />
           </button>
         </view>
-      <view bindtap="onSubmit">接</view>
+      <view class="connect" bindtap="onSubmit">接</view>
       </view>
     </form>
   </view>

@@ -11,6 +11,7 @@
 .search-content {
   display: flex;
   flex-direction: row;
+  align-items: center;
   height: 57rpx;
 }
 
@@ -51,6 +52,13 @@
   margin-left: 20rpx;
   margin-right: 20rpx;
   align-self: center;
+}
+
+.connect {
+  width: 70rpx;
+  font-size: 32rpx;
+  color: #1c1c1c;
+  text-align: center;
 }
 
 /*单行文字*/
