@@ -64,7 +64,6 @@ Page({
       var isCreater = sequence.get("creater").id == userId
       var isChallenger = sequence.get("challenger").id == userId
       var showInput = (isCreater || isChallenger) && sequence.get("lastIdiomCreater").id != userId
-
       that.setData({
         isCreater: isCreater,
         showInput: showInput
@@ -86,12 +85,16 @@ Page({
   },
 
   getIdioms() {
+    util.showLoading()
     var that = this
     var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
 
     var query = new AV.Query('Idiom')
     query.equalTo('sequence', sequence)
+    query.descending('createdAt')
     query.find().then(function (idiomList) {
+      util.hideLoading()
+      wx.stopPullDownRefresh()
       console.log("获取成语")
       console.log(idiomList)
       that.setData({
@@ -153,7 +156,7 @@ Page({
     var that = this
     var idiom = this.data.inputIdiom
     var idiomList = this.data.idiomList
-    var lastIdiom = idiomList[idiomList.length - 1]
+    var lastIdiom = idiomList[0]
     if (idiom.length == 4 && util.isChinese(idiom)) {
       AV.Cloud.run('pinyin', { hanzi: idiom }).then(function (pinyin) {
         that.data.inputIdiomPinyin = pinyin
@@ -251,12 +254,23 @@ Page({
       wx.showToast({
         title: '创建成功'
       })
+      that.setData({
+        showInput: false
+      })
       that.getIdioms()
     }, function (error) {
       util.hideLoading()
       console.log("保存成语失败")
       console.log(error)
     }).catch(console.error)
+  },
+
+  /**
+  * 下拉刷新
+  */
+  onPullDownRefresh: function () {
+    this.getSequence()
+    this.getIdioms()
   },
 
   /**

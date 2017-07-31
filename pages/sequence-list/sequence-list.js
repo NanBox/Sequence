@@ -55,6 +55,7 @@ Page({
     // 执行查询
     query.find().then(userSequenceMapList => {
       util.hideLoading()
+      wx.stopPullDownRefresh()
       var that = this
       var sequenceList = []
       userSequenceMapList.forEach(function (userSequenceMap) {
@@ -104,6 +105,13 @@ Page({
       app.updateUserInfo(res.detail.userInfo, this.updateUserSuccess)
       this.navigateToCreate()
     }
-  }
+  },
+
+  /**
+    * 下拉刷新
+    */
+  onPullDownRefresh: function () {
+    this.getMySequences()
+  },
 
 })
