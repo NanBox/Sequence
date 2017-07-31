@@ -54,6 +54,7 @@ Page({
     query.include(['sequence'])
     // 执行查询
     query.find().then(userSequenceMapList => {
+      util.hideLoading()
       var that = this
       var sequenceList = []
       userSequenceMapList.forEach(function (userSequenceMap) {
@@ -70,30 +71,6 @@ Page({
       console.log("更新接龙失败")
       console.log(err)
     })
-
-    // var query = new AV.Query('Sequence')
-    // var creater = {
-    //   id: user.get("authData").lc_weapp.openid,
-    //   name: user.get("nickName"),
-    //   img: user.get("avatarUrl")
-    // }
-    // query.equalTo('creater', creater)
-    // query.descending('updatedAt')
-    // // 执行查询
-    // query.find().then(sequenceList => {
-    //   util.hideLoading()
-    //   var that = this
-    //   this.setData({
-    //     canShowEmpty: true,
-    //     sequenceList: sequenceList
-    //   })
-    //   console.log("更新接龙列表")
-    //   console.log(sequenceList)
-    // }, err => {
-    //   util.hideLoading()
-    //   console.log("更新接龙失败")
-    //   console.log(err)
-    // })
   },
 
   /**
@@ -111,7 +88,6 @@ Page({
     * 跳转创建接龙页面
     */
   navigateToCreate: function () {
-    var groupId = this.data.groupId
     wx.navigateTo({
       url: '/pages/create-idiom/create-idiom'
     })

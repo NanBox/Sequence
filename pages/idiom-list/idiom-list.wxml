@@ -2,10 +2,13 @@
 
 <template wx:if="{{showInput}}" is="search-bar" />
 
-<view class="idiom" wx:for="{{idiomList}}">
+<view wx:for="{{idiomList}}" class="idiom">
   <view class="num">{{item.idiomNum}}</view>
-  <view class="value">{{item.value}}</view>
-  <image class="creater-img" src="{{item.creater.img}}" mode="aspectFit" />
+  <view class="text">{{item.value}}</view>
+  <view class="creater">
+    <image class="img" src="{{item.creater.img}}" mode="aspectFit" />
+    <view class="name">{{item.creater.name}}</view>
+  </view>
 </view>
 
 <view class="bottom">
@@ -14,7 +17,7 @@
 
   <view class="vs">VS</view>
 
-  <button wx:if="{{!isCreater&&!hasUserInfo}}" class="button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
+  <button wx:if="{{!isCreater&&!hasUserInfo&&sequence.challenger.img==''}}" class="button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
     <image class="member-img" src="/images/icon_add.png" mode="aspectFit"/>
 </button>
   <button wx:elif="{{sequence.challenger.img==''}}" class="button" open-type="share">

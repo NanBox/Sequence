@@ -5,31 +5,44 @@ page {
 }
 
 .idiom {
-  height: 100rpx;
   display: flex;
   flex-direction: row;
   align-items: center;
-  background-color: white;
   margin: 20rpx;
+  background-color: white;
+  height: 100rpx;
 }
 
 .idiom .num {
-  font-size: 28rpx;
-  color: #1c1c1c;
+  font-size: 26rpx;
+  color: gray;
   margin-left: 40rpx;
 }
 
-.idiom .value {
-  font-size: 28rpx;
-  color: #1c1c1c;
+.idiom .text {
+  font-size: 26rpx;
+  color: gray;
   margin-left: 40rpx;
 }
 
-.idiom .creater-img {
-  width: 80rpx;
-  height: 80rpx;
+.idiom .creater {
+  display: flex;
+  width: 120rpx;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: 40rpx;
+}
+
+.idiom .creater .img {
+  height: 50rpx;
+  width: 50rpx;
   border-radius: 100%;
-  margin-left: 40rpx;
+}
+
+.idiom .creater .name {
+  font-size: 26rpx;
+  color: gray;
 }
 
 .bottom {

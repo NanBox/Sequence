@@ -34,6 +34,8 @@ App({
             success: res => {
               // 更新用户信息
               that.updateUserInfo(res.userInfo, updateUserSuccess)
+            }, fail: res => {
+              util.hideLoading()
             }
           })
         }

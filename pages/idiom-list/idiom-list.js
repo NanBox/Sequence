@@ -29,6 +29,7 @@ Page({
     if (!app.globalData.hasLogin) {
       app.login(this.loginSuccess, this.updateUserSuccess)
     } else {
+      this.getSequence()
       this.getIdioms()
     }
     //转发可获取转发目标信息
@@ -42,39 +43,14 @@ Page({
   },
 
   updateUserSuccess: function () {
+    this.getSequence()
     this.getIdioms()
     this.setData({
       hasUserInfo: true
     })
   },
 
-  setChallenger: function () {
-    var that = this
-    var sequence = this.data.sequence
-    if (sequence.get("challenger").id.length == "") {
-      var app = getApp()
-      var user = app.globalData.user
-      var challenger = {
-        id: user.get("authData").lc_weapp.openid,
-        name: user.get("nickName"),
-        img: user.get("avatarUrl")
-      }
-      sequence.set('challenger', challenger)
-      sequence.save().then(function (res) {
-        console.log("保存挑战者")
-        console.log(res)
-        that.getIdioms()
-      }, function (error) {
-        console.log("保存挑战者失败")
-        console.log(error)
-      }).catch(console.error)
-    }
-    this.setData({
-      sequence: sequence
-    })
-  },
-
-  getIdioms() {
+  getSequence() {
     var that = this
     var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
     var app = getApp()
@@ -107,6 +83,11 @@ Page({
       console.log("获取接龙实例失败")
       console.log(error)
     })
+  },
+
+  getIdioms() {
+    var that = this
+    var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
 
     var query = new AV.Query('Idiom')
     query.equalTo('sequence', sequence)
@@ -119,6 +100,32 @@ Page({
     })
   },
 
+  setChallenger: function () {
+    var that = this
+    var sequence = this.data.sequence
+    if (sequence.get("challenger").id.length == "") {
+      var app = getApp()
+      var user = app.globalData.user
+      var challenger = {
+        id: user.get("authData").lc_weapp.openid,
+        name: user.get("nickName"),
+        img: user.get("avatarUrl")
+      }
+      sequence.set('challenger', challenger)
+      sequence.save().then(function (res) {
+        console.log("保存挑战者")
+        console.log(res)
+        that.getIdioms()
+      }, function (error) {
+        console.log("保存挑战者失败")
+        console.log(error)
+      }).catch(console.error)
+    }
+    this.setData({
+      sequence: sequence
+    })
+  },
+
   /**
   * 获取用户信息
   */
@@ -128,7 +135,6 @@ Page({
       console.log("成功获取用户信息")
       console.log(res)
       app.updateUserInfo(res.detail.userInfo, this.getPremissionSuccess)
-      this.navigateToCreate()
     }
   },
 
@@ -157,7 +163,7 @@ Page({
           that.saveIdiom()
         } else {
           wx.showModal({
-            content: "你确定能接上？",
+            content: "这个成语接不上哦",
           })
         }
       })
@@ -181,6 +187,7 @@ Page({
   },
 
   saveIdiom: function () {
+    util.showLoading()
     var that = this
     var user = getApp().globalData.user
     var sequence = this.data.sequence
@@ -218,7 +225,6 @@ Page({
         util.hideLoading()
       }
     }, function (err) {
-      util.hideLoading()
       // 处理调用失败
       console.log("查找用户、群关系失败")
       console.log(err)
@@ -237,6 +243,7 @@ Page({
     idiom.set("sequence", sequence)
 
     idiom.save().then(function (res) {
+      util.hideLoading()
       //成功保存记录
       console.log("保存成语")
       console.log(res)
