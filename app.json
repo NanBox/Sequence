@@ -2,12 +2,12 @@
   "pages": [
     "pages/sequence-list/sequence-list",
     "pages/idiom-list/idiom-list",
-    "pages/create-idiom/create-idiom"
+    "pages/create-sequence/create-sequence"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "WeChat",
-    "navigationBarTextStyle": "black"
+    "navigationBarBackgroundColor": "#569de8",
+    "navigationBarTitleText": "接下去",
+    "navigationBarTextStyle": "white"
   }
 }

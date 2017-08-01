@@ -154,12 +154,27 @@ Page({
 
   onSubmit: function () {
     var that = this
-    var idiom = this.data.inputIdiom
+    var inputIdiom = this.data.inputIdiom
     var idiomList = this.data.idiomList
     var lastIdiom = idiomList[0]
     if (idiom.length == 4 && util.isChinese(idiom)) {
       util.showLoading()
-      AV.Cloud.run('pinyin', { hanzi: idiom }).then(function (pinyin) {
+      // 判断是否已有这个成语
+      var hasThisIdiom = false
+      for (var i = 0; i < idiomList.length; i++) {
+        var idiom = idiomList[i]
+        if (inputIdiom == idiom.get("value")) {
+          hasThisIdiom = true
+          break
+        }
+      }
+      if (hasThisIdiom) {
+        wx.showModal({
+          content: "已经有这个成语了哦",
+        })
+        return
+      }
+      AV.Cloud.run('pinyin', { hanzi: inputIdiom }).then(function (pinyin) {
         util.hideLoading()
         that.data.inputIdiomPinyin = pinyin
         console.log("转换拼音")
@@ -279,10 +294,11 @@ Page({
   },
 
   /**
-  * 用户点击右上角分享
+  * 分享
   */
   onShareAppMessage: function () {
     var that = this
+
     return {
       title: "到你接龙了！",
       path: 'pages/idiom-list/idiom-list?id=' + this.data.id,

@@ -90,7 +90,7 @@ Page({
     */
   navigateToCreate: function () {
     wx.navigateTo({
-      url: '/pages/create-idiom/create-idiom'
+      url: '/pages/create-sequence/create-sequence'
     })
   },
 

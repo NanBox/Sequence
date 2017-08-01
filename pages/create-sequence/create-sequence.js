@@ -42,7 +42,7 @@ Page({
     }
     var that = this
     var user = AV.User.current()
-
+    util.showLoading()
     AV.Cloud.run('pinyin', { hanzi: this.data.firstIdiom }).then(function (pinyin) {
       console.log("转换拼音")
       console.log(pinyin)

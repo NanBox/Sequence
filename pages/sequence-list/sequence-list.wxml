@@ -2,8 +2,15 @@
 
 <view class="my-sequence">我参与的接龙</view>
 <view wx:for="{{sequenceList}}" wx:key="{{index}}" class="sequence" bindtap="navigateToIdiomList" id="{{index}}">
-  <view class="sequence-name">{{item.sequenceName}}</view>
-  <view class="lastIdiom">{{item.idiomCount}} {{item.lastIdiom}}</view>
+  <view class="text">
+    <view class="name">{{item.sequenceName}}</view>
+    <view class="lastIdiom">{{item.idiomCount}}. {{item.lastIdiom}}</view>
+  </view>
+  <view class="two">
+    <image class="img" src="{{item.creater.img}}" mode="aspectFit" />
+    <view class="vs">VS</view>
+    <image class="img" src="{{item.challenger.img.length>0?item.challenger.img:'/images/default_avatar.png'}}" mode="aspectFill" />
+  </view>
 </view>
 <button wx:if="{{hasUserInfo}}" class="create-button" bindtap="navigateToCreate">
     <image class="img" src="/images/icon_add.png" mode="aspectFit"/>

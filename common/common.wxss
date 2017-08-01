@@ -576,11 +576,11 @@
   width: 116rpx;
   height: 116rpx;
   border-radius: 100%;
-  background-color: #58b6ff;
+  background-color: #ea4c89;
   position: fixed;
   bottom: 0;
   margin: 30rpx;
-  border: 8rpx solid #cde9ff;
+  border: 8rpx solid #f5c5d7;
   right: 0;
   display: flex;
   justify-content: center;

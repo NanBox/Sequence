@@ -1,7 +1,7 @@
 @import "../../common/common.wxss";
 
 page {
-  background-color: #eee;
+  background-color: #f8f8f8;
 }
 
 .my-sequence {
@@ -12,21 +12,50 @@ page {
 
 .sequence {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: white;
+  height: 120rpx;
+  padding-left: 30rpx;
+  padding-right: 30rpx;
+  border-bottom: 1rpx #eee solid;
+}
+
+.sequence .text {
+  flex: 1;
+  display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: 20rpx;
-  background: white;
-  height: 100rpx;
-  padding-left: 20rpx;
 }
 
-.sequence .sequence-name {
-  color: #1c1c1c;
-  font-size: 28rpx;
+.sequence .text .name {
+  color: #569de8;
+  font-size: 32rpx;
+  font-weight: bold;
 }
 
-.sequence .lastIdiom {
+.sequence .text .lastIdiom {
   color: gray;
-  font-size: 22rpx;
-  margin-top: 12rpx;
+  font-size: 26rpx;
+  margin-top: 10rpx;
+}
+
+.sequence .two {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.sequence .two .img {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 100%;
+}
+
+.sequence .two .vs {
+  color: gray;
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-left: 20rpx;
+  margin-right: 20rpx;
 }
