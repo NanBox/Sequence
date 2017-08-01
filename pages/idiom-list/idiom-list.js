@@ -158,7 +158,9 @@ Page({
     var idiomList = this.data.idiomList
     var lastIdiom = idiomList[0]
     if (idiom.length == 4 && util.isChinese(idiom)) {
+      util.showLoading()
       AV.Cloud.run('pinyin', { hanzi: idiom }).then(function (pinyin) {
+        util.hideLoading()
         that.data.inputIdiomPinyin = pinyin
         console.log("转换拼音")
         console.log(pinyin)
@@ -169,6 +171,9 @@ Page({
             content: "这个成语接不上哦",
           })
         }
+      }, function (err) {
+        console.log("转换拼音失败")
+        console.log(err)
       })
     } else {
       wx.showModal({
