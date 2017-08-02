@@ -5,19 +5,19 @@
 <view wx:for="{{idiomList}}" wx:key="{{item.id}}" class="idiom">
   <view class="num">{{item.idiomNum}}</view>
   <view class="text">{{item.value}}</view>
-  <view class="creater">
-    <image class="img" src="{{item.creater.img}}" mode="aspectFit" />
-    <view class="name">{{item.creater.name}}</view>
+  <view class="creator">
+    <image class="img" src="{{item.creator.img}}" mode="aspectFit" />
+    <view class="name">{{item.creator.name}}</view>
   </view>
 </view>
 
 <view class="bottom">
 
-  <image class="createrImg" src="{{sequence.creater.img}}" mode="aspectFit" />
+  <image class="creatorImg" src="{{sequence.creator.img}}" mode="aspectFit" />
 
   <view class="vs">VS</view>
 
-  <button wx:if="{{!isCreater&&!hasUserInfo&&sequence.challenger.img==''}}" class="button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
+  <button wx:if="{{!isCreator&&!hasUserInfo&&sequence.challenger.img==''}}" class="button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
     <image class="member-img" src="/images/icon_add.png" mode="aspectFit"/>
 </button>
   <button wx:elif="{{sequence.challenger.img==''}}" class="button" open-type="share">

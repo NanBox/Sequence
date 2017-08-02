@@ -11,10 +11,12 @@ Page({
     sequence: null,
     idiomList: [],
     hasUserInfo: false,
-    isCreater: false,
+    isCreator: false,
     showInput: false,
     inputIdiom: "",
-    inputIdiomPinyin: []
+    inputIdiomPinyin: [],
+    client: null,
+    conversation: null
   },
 
   /**
@@ -38,9 +40,7 @@ Page({
     })
   },
 
-  loginSuccess: function () {
-
-  },
+  loginSuccess: function () { },
 
   updateUserSuccess: function () {
     this.getSequence()
@@ -57,19 +57,19 @@ Page({
     var user = app.globalData.user
 
     sequence.fetch().then(function () {
-      console.log("获取接龙实例")
+      console.log("获取接龙")
       console.log(sequence)
       that.data.sequence = sequence
       var userId = user.id
-      var isCreater = sequence.get("creater").id == userId
+      var isCreator = sequence.get("creator").id == userId
       var isChallenger = sequence.get("challenger").id == userId
-      var showInput = (isCreater || isChallenger) && sequence.get("lastIdiomCreater").id != userId
+      var showInput = (isCreator || isChallenger) && sequence.get("lastIdiomCreator").id != userId
       that.setData({
-        isCreater: isCreater,
+        isCreator: isCreator,
         showInput: showInput
       })
-
-      if (!isCreater &&
+      // 判断设置挑战者
+      if (!isCreator &&
         sequence.get("challenger").id.length == 0 &&
         that.data.hasUserInfo) {
         that.setChallenger()
@@ -78,9 +78,67 @@ Page({
           sequence: sequence
         })
       }
+      // 创建对话
+      that.createConversation()
     }, function (error) {
-      console.log("获取接龙实例失败")
+      console.log("获取接龙实例")
       console.log(error)
+    })
+  },
+
+  createConversation() {
+    var that = this
+    var user = getApp().globalData.user
+    var realtime = getApp().globalData.realtime
+    var sequence = this.data.sequence
+    realtime.createIMClient(user.id).then(function (client) {
+      that.data.client = client
+      if (sequence.get("conversationId") != null &&
+        sequence.get("conversationId").length > 0) {
+        var query = client.getQuery()
+        query
+          .equalTo('objectId', "5981863d44d904006909bfee")
+          .find()
+          .then(function (conversations) {
+            console.log("查询对话")
+            console.log(conversations)
+            that.data.conversation = conversations[0]
+            that.receiveMessage()
+          }, function (error) {
+            console.log("查询对话失败")
+            console.log(error)
+          })
+      } else {
+        client.createConversation({
+          transient: true,
+        }).then(function (conversation) {
+          console.log("创建对话")
+          console.log(conversation)
+          that.data.conversation = conversation
+          sequence.set("conversationId", conversation.id)
+          sequence.save()
+          that.receiveMessage()
+        }, function (error) {
+          console.log("创建对话失败")
+          console.log(error)
+        })
+      }
+    })
+  },
+
+  receiveMessage() {
+    var client = this.data.client
+    var sequence = this.data.sequence
+    var idiomList = this.data.idiomList
+    client.on('message', function (message, conversation) {
+      if (conversation.id != that.conversation.id ||
+        message.text == idiomList.length.toString()) {
+        return
+      }
+      if (sequence.get("challenger").id.length == 0) {
+        this.getSequence()
+      }
+      this.getIdioms()
     })
   },
 
@@ -216,7 +274,7 @@ Page({
     var sequence = this.data.sequence
     var idiomList = this.data.idiomList
 
-    var creater = {
+    var creator = {
       id: user.id,
       name: user.get("nickName"),
       img: user.get("avatarUrl")
@@ -254,12 +312,12 @@ Page({
     })
 
     sequence.set("lastIdiom", this.data.inputIdiom)
-    sequence.set("lastIdiomCreater", creater)
+    sequence.set("lastIdiomCreator", creator)
     sequence.set("idiomCount", idiomList.length + 1)
 
     var idiom = new AV.Object("Idiom")
     idiom.set("value", this.data.inputIdiom)
-    idiom.set("creater", creater)
+    idiom.set("creator", creator)
     idiom.set("sequenceName", sequence.get("sequenceName"))
     idiom.set("pinyin", that.data.inputIdiomPinyin)
     idiom.set("idiomNum", that.data.idiomList.length + 1)
@@ -277,6 +335,10 @@ Page({
       that.setData({
         showInput: false
       })
+      // 发送消息
+      var size = idiomList.length + 1
+      conversation.send(new AV.TextMessage(size.toString()))
+      // 刷新列表
       that.getIdioms()
     }, function (error) {
       util.hideLoading()
@@ -289,7 +351,10 @@ Page({
   * 下拉刷新
   */
   onPullDownRefresh: function () {
-    this.getSequence()
+    var sequence = this.data.sequence
+    if (sequence.get("challenger").id.length == 0) {
+      this.getSequence()
+    }
     this.getIdioms()
   },
 
@@ -306,6 +371,13 @@ Page({
       //   that.getShareInfo(res.shareTickets[0])
       // }
     }
+  },
+
+  /**
+    * 生命周期函数--监听页面卸载
+    */
+  onUnload: function () {
+    this.data.client.close()
   },
 
   /**
