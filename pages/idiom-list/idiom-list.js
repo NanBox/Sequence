@@ -79,14 +79,14 @@ Page({
         })
       }
       // 创建对话
-      that.createConversation()
+      that.getConversation()
     }, function (error) {
       console.log("获取接龙实例")
       console.log(error)
     })
   },
 
-  createConversation() {
+  getConversation() {
     var that = this
     var user = getApp().globalData.user
     var realtime = getApp().globalData.realtime
@@ -97,7 +97,7 @@ Page({
         sequence.get("conversationId").length > 0) {
         var query = client.getQuery()
         query
-          .equalTo('objectId', "5981863d44d904006909bfee")
+          .equalTo('objectId', sequence.get("conversationId"))
           .find()
           .then(function (conversations) {
             console.log("查询对话")
@@ -215,7 +215,7 @@ Page({
     var inputIdiom = this.data.inputIdiom
     var idiomList = this.data.idiomList
     var lastIdiom = idiomList[0]
-    if (idiom.length == 4 && util.isChinese(idiom)) {
+    if (inputIdiom.length == 4 && util.isChinese(inputIdiom)) {
       util.showLoading()
       // 判断是否已有这个成语
       var hasThisIdiom = false
