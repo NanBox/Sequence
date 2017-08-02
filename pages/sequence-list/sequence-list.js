@@ -1,5 +1,5 @@
-const AV = require('../../utils/av-weapp-min')
-var util = require('../../utils/util.js')
+const AV = require('../../libs/av-weapp-min')
+const util = require('../../utils/util.js')
 
 //获取应用实例
 var app = getApp()

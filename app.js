@@ -1,5 +1,6 @@
-const AV = require('./utils/av-weapp-min.js')
-var util = require('./utils/util.js')
+const AV = require('./libs/av-weapp-min.js')
+const Realtime = require('./libs/realtime.weapp.min.js').Realtime
+const util = require('./utils/util.js')
 
 AV.init({
   appId: 'MArHq4pqWa8HeVXdUge3o98t-gzGzoHsz',
@@ -12,6 +13,11 @@ App({
     if (ops.scene == 1044) {
       this.globalData.shareTicket = ops.shareTicket
     }
+    // 初始化 Realtime
+    this.globalData.realtime = new Realtime({
+      appId: 'MArHq4pqWa8HeVXdUge3o98t-gzGzoHsz',
+      noBinary: true,
+    })
   },
 
   login: function (loginSuccess, updateUserSuccess) {
@@ -73,6 +79,7 @@ App({
     hasLogin: false,
     hasUserInfo: false,
     shareTicket: "",
-    refreshSequenceList: false
+    refreshSequenceList: false,
+    realtime: null
   }
 })

@@ -1,5 +1,5 @@
-const AV = require('../../utils/av-weapp-min')
-var util = require('../../utils/util.js')
+const AV = require('../../libs/av-weapp-min')
+const util = require('../../utils/util.js')
 
 Page({
 
@@ -42,7 +42,7 @@ Page({
     }
     var that = this
     var user = getApp().globalData.user
-    var creater = {
+    var creator = {
       id: user.id,
       name: user.get("nickName"),
       img: user.get("avatarUrl")
@@ -51,7 +51,7 @@ Page({
       sequenceName: this.data.sequenceName,
       firstIdiom: this.data.firstIdiom,
       type: "two",
-      creater: creater
+      creator: creator
     }
     util.showLoading()
     AV.Cloud
@@ -71,7 +71,7 @@ Page({
         console.log(sequence)
       }, err => {
         util.hideLoading()
-        console.log("获取接龙失败")
+        console.log("创建接龙失败")
         console.log(err)
       })
   }

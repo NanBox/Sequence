@@ -7,7 +7,7 @@
     <view class="lastIdiom">{{item.idiomCount}}. {{item.lastIdiom}}</view>
   </view>
   <view class="two">
-    <image class="img" src="{{item.creater.img}}" mode="aspectFit" />
+    <image class="img" src="{{item.creator.img}}" mode="aspectFit" />
     <view class="vs">VS</view>
     <image class="img" src="{{item.challenger.img.length>0?item.challenger.img:'/images/default_avatar.png'}}" mode="aspectFill" />
   </view>

@@ -25,7 +25,7 @@ page {
   margin-left: 40rpx;
 }
 
-.idiom .creater {
+.idiom .creator {
   display: flex;
   width: 120rpx;
   flex-direction: column;
@@ -34,13 +34,13 @@ page {
   margin-left: 40rpx;
 }
 
-.idiom .creater .img {
+.idiom .creator .img {
   height: 50rpx;
   width: 50rpx;
   border-radius: 100%;
 }
 
-.idiom .creater .name {
+.idiom .creator .name {
   font-size: 26rpx;
   color: gray;
 }
@@ -58,7 +58,7 @@ page {
   font-size: 30rpx;
 }
 
-.bottom .createrImg {
+.bottom .creatorImg {
   width: 80rpx;
   height: 80rpx;
   margin-left: 80rpx;
