@@ -50,7 +50,7 @@ Page({
       .then(sequenceList => {
         util.hideLoading()
         wx.stopPullDownRefresh()
-        this.setData({
+        that.setData({
           canShowEmpty: true,
           sequenceList: sequenceList
         })

@@ -1,5 +1,6 @@
 const AV = require('../../libs/av-weapp-min')
 const util = require('../../utils/util.js')
+// const TextMessage = require('../../libs/realtime.weapp.min.js').TextMessage;
 
 Page({
 
@@ -79,7 +80,7 @@ Page({
         })
       }
       // 创建对话
-      that.getConversation()
+      // that.getConversation()
     }, function (error) {
       console.log("获取接龙实例")
       console.log(error)
@@ -216,7 +217,6 @@ Page({
     var idiomList = this.data.idiomList
     var lastIdiom = idiomList[0]
     if (inputIdiom.length == 4 && util.isChinese(inputIdiom)) {
-      util.showLoading()
       // 判断是否已有这个成语
       var hasThisIdiom = false
       for (var i = 0; i < idiomList.length; i++) {
@@ -232,6 +232,7 @@ Page({
         })
         return
       }
+      util.showLoading()
       AV.Cloud.run('pinyin', { hanzi: inputIdiom }).then(function (pinyin) {
         util.hideLoading()
         that.data.inputIdiomPinyin = pinyin
@@ -336,8 +337,8 @@ Page({
         showInput: false
       })
       // 发送消息
-      var size = idiomList.length + 1
-      conversation.send(new AV.TextMessage(size.toString()))
+      // var size = idiomList.length + 1
+      // that.data.conversation.send(new TextMessage(size.toString()))
       // 刷新列表
       that.getIdioms()
     }, function (error) {
@@ -377,7 +378,7 @@ Page({
     * 生命周期函数--监听页面卸载
     */
   onUnload: function () {
-    this.data.client.close()
+    // this.data.client.close()
   },
 
   /**
