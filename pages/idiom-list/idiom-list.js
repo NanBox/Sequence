@@ -23,12 +23,12 @@ Page({
   onLoad: function (options) {
     this.data.id = options.id
     var app = getApp()
-    this.setData({
-      hasUserInfo: app.globalData.hasUserInfo
-    })
     if (!app.globalData.hasLogin) {
       app.login(this.loginSuccess, this.updateUserSuccess)
     } else {
+      this.setData({
+        hasUserInfo: true
+      })
       this.getSequence()
       this.getIdioms()
     }
@@ -60,7 +60,7 @@ Page({
       console.log("获取接龙实例")
       console.log(sequence)
       that.data.sequence = sequence
-      var userId = user.get("authData").lc_weapp.openid
+      var userId = user.id
       var isCreater = sequence.get("creater").id == userId
       var isChallenger = sequence.get("challenger").id == userId
       var showInput = (isCreater || isChallenger) && sequence.get("lastIdiomCreater").id != userId
@@ -110,7 +110,7 @@ Page({
       var app = getApp()
       var user = app.globalData.user
       var challenger = {
-        id: user.get("authData").lc_weapp.openid,
+        id: user.id,
         name: user.get("nickName"),
         img: user.get("avatarUrl")
       }
@@ -217,7 +217,7 @@ Page({
     var idiomList = this.data.idiomList
 
     var creater = {
-      id: user.get("authData").lc_weapp.openid,
+      id: user.id,
       name: user.get("nickName"),
       img: user.get("avatarUrl")
     }

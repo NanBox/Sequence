@@ -2,7 +2,7 @@
 
 <template wx:if="{{showInput}}" is="search-bar" />
 
-<view wx:for="{{idiomList}}" class="idiom">
+<view wx:for="{{idiomList}}" wx:key="{{item.id}}" class="idiom">
   <view class="num">{{item.idiomNum}}</view>
   <view class="text">{{item.value}}</view>
   <view class="creater">

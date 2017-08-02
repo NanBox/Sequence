@@ -16,12 +16,10 @@ Page({
   onLoad: function () {
     var app = getApp()
     app.login(this.loginSuccess, this.updateUserSuccess)
-
     //可获取转发目标信息
     wx.showShareMenu({
       withShareTicket: true
     })
-
   },
 
   onShow: function (options) {
@@ -46,32 +44,23 @@ Page({
   getMySequences: function () {
     util.showLoading()
     var that = this
-    var user = getApp().globalData.user
-    // 构建 UserSequenceMap 的查询
-    var query = new AV.Query('UserSequenceMap')
-    query.equalTo('user', user)
-    query.descending('createdAt')
-    query.include(['sequence'])
-    // 执行查询
-    query.find().then(userSequenceMapList => {
-      util.hideLoading()
-      wx.stopPullDownRefresh()
-      var that = this
-      var sequenceList = []
-      userSequenceMapList.forEach(function (userSequenceMap) {
-        sequenceList.push(userSequenceMap.get("sequence"))
+    var userId = getApp().globalData.user.id
+    AV.Cloud
+      .run('getMySequences', { userId: userId })
+      .then(sequenceList => {
+        util.hideLoading()
+        wx.stopPullDownRefresh()
+        this.setData({
+          canShowEmpty: true,
+          sequenceList: sequenceList
+        })
+        console.log("获取接龙")
+        console.log(sequenceList)
+      }, err => {
+        util.hideLoading()
+        console.log("获取接龙失败")
+        console.log(err)
       })
-      this.setData({
-        canShowEmpty: true,
-        sequenceList: sequenceList
-      })
-      console.log("更新接龙列表")
-      console.log(sequenceList)
-    }, err => {
-      util.hideLoading()
-      console.log("更新接龙失败")
-      console.log(err)
-    })
   },
 
   /**
@@ -79,7 +68,7 @@ Page({
     */
   navigateToIdiomList: function (event) {
     var index = event.currentTarget.id
-    var id = this.data.sequenceList[index].id
+    var id = this.data.sequenceList[index].objectId
     wx.navigateTo({
       url: '/pages/idiom-list/idiom-list?id=' + id
     })
