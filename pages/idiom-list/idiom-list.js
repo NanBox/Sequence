@@ -1,6 +1,8 @@
 const AV = require('../../libs/av-weapp-min')
+const TextMessage = require('../../libs/realtime.weapp.min.js').TextMessage
 const util = require('../../utils/util.js')
-// const TextMessage = require('../../libs/realtime.weapp.min.js').TextMessage;
+var mClient = null
+var mConversation = null
 
 Page({
 
@@ -15,9 +17,7 @@ Page({
     isCreator: false,
     showInput: false,
     inputIdiom: "",
-    inputIdiomPinyin: [],
-    client: null,
-    conversation: null
+    inputIdiomPinyin: []
   },
 
   /**
@@ -80,7 +80,7 @@ Page({
         })
       }
       // 创建对话
-      // that.getConversation()
+      that.getConversation()
     }, function (error) {
       console.log("获取接龙实例")
       console.log(error)
@@ -93,7 +93,7 @@ Page({
     var realtime = getApp().globalData.realtime
     var sequence = this.data.sequence
     realtime.createIMClient(user.id).then(function (client) {
-      that.data.client = client
+      mClient = client
       if (sequence.get("conversationId") != null &&
         sequence.get("conversationId").length > 0) {
         var query = client.getQuery()
@@ -103,7 +103,7 @@ Page({
           .then(function (conversations) {
             console.log("查询对话")
             console.log(conversations)
-            that.data.conversation = conversations[0]
+            mConversation = conversations[0]
             that.receiveMessage()
           }, function (error) {
             console.log("查询对话失败")
@@ -115,7 +115,7 @@ Page({
         }).then(function (conversation) {
           console.log("创建对话")
           console.log(conversation)
-          that.data.conversation = conversation
+          mConversation = conversation
           sequence.set("conversationId", conversation.id)
           sequence.save()
           that.receiveMessage()
@@ -128,11 +128,10 @@ Page({
   },
 
   receiveMessage() {
-    var client = this.data.client
     var sequence = this.data.sequence
     var idiomList = this.data.idiomList
-    client.on('message', function (message, conversation) {
-      if (conversation.id != that.conversation.id ||
+    mClient.on('message', function (message, conversation) {
+      if (conversation.id != mConversation.id ||
         message.text == idiomList.length.toString()) {
         return
       }
@@ -337,8 +336,8 @@ Page({
         showInput: false
       })
       // 发送消息
-      // var size = idiomList.length + 1
-      // that.data.conversation.send(new TextMessage(size.toString()))
+      var size = idiomList.length + 1
+      mConversation.send(new TextMessage(size.toString()))
       // 刷新列表
       that.getIdioms()
     }, function (error) {
@@ -378,7 +377,9 @@ Page({
     * 生命周期函数--监听页面卸载
     */
   onUnload: function () {
-    // this.data.client.close()
+    if (mClient != null) {
+      mClient.close()
+    }
   },
 
   /**
