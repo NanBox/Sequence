@@ -23,10 +23,8 @@ Page({
   },
 
   onShow: function (options) {
-    var app = getApp()
-    var refreshSequenceList = app.globalData.refreshSequenceList
-    if (refreshSequenceList) {
-      app.globalData.refreshSequenceList = false
+    if (getApp().globalData.refreshSequenceList) {
+      getApp().globalData.refreshSequenceList = false
       this.getMySequences()
     }
   },
@@ -54,12 +52,9 @@ Page({
           canShowEmpty: true,
           sequenceList: sequenceList
         })
-        console.log("获取接龙")
-        console.log(sequenceList)
       }, err => {
         util.hideLoading()
-        console.log("获取接龙失败")
-        console.log(err)
+        console.log("获取接龙失败", err)
       })
   },
 
@@ -89,8 +84,6 @@ Page({
   getUserInfo: function (res) {
     var app = getApp()
     if (res.detail.userInfo) {
-      console.log("成功获取用户信息")
-      console.log(res)
       app.updateUserInfo(res.detail.userInfo, this.updateUserSuccess)
       this.navigateToCreate()
     }
@@ -101,6 +94,6 @@ Page({
     */
   onPullDownRefresh: function () {
     this.getMySequences()
-  },
+  }
 
 })

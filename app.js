@@ -27,8 +27,6 @@ App({
     AV.User.loginWithWeapp().then(user => {
       that.globalData.user = AV.User.current()
       that.globalData.hasLogin = true
-      console.log("登录成功")
-      console.log(that.globalData.user)
       // 判断用户信息是否已授权
       wx.getSetting({
         success: res => {
@@ -49,9 +47,8 @@ App({
       typeof loginSuccess == "function" && loginSuccess()
     }, err => {
       util.hideLoading()
-      console.log("登录失败")
-      console.log(error)
-    }).catch(console.error)
+      console.log("登录失败", error)
+    })
   },
 
   /**
@@ -64,14 +61,11 @@ App({
       util.hideLoading()
       that.globalData.user = AV.User.current()
       that.globalData.hasUserInfo = true
-      console.log("更新用户信息成功")
-      console.log(that.globalData.user)
       typeof updateUserSuccess == "function" && updateUserSuccess()
     }, error => {
       util.hideLoading()
-      console.log("更新用户信息失败")
-      console.log(error)
-    }).catch(console.error)
+      console.log("更新用户信息失败", error)
+    })
   },
 
   globalData: {
@@ -80,6 +74,6 @@ App({
     hasUserInfo: false,
     shareTicket: "",
     refreshSequenceList: false,
-    // realtime: null
+    realtime: null
   }
 })

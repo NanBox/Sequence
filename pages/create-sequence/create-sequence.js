@@ -67,8 +67,6 @@ Page({
             delta: 1
           })
         }, 1000)
-        console.log("创建接龙")
-        console.log(sequence)
       }, err => {
         util.hideLoading()
         console.log("创建接龙失败")

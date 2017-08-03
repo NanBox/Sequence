@@ -51,15 +51,13 @@ Page({
     })
   },
 
-  getSequence() {
+  getSequence: function () {
     var that = this
     var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
     var app = getApp()
     var user = app.globalData.user
 
     sequence.fetch().then(function () {
-      console.log("获取接龙")
-      console.log(sequence)
       that.data.sequence = sequence
       var userId = user.id
       var isCreator = sequence.get("creator").id == userId
@@ -82,12 +80,11 @@ Page({
       // 创建对话
       that.getConversation()
     }, function (error) {
-      console.log("获取接龙实例")
-      console.log(error)
+      console.log("获取接龙失败", error)
     })
   },
 
-  getConversation() {
+  getConversation: function () {
     var that = this
     var user = getApp().globalData.user
     var realtime = getApp().globalData.realtime
@@ -96,53 +93,42 @@ Page({
       mClient = client
       if (sequence.get("conversationId") != null &&
         sequence.get("conversationId").length > 0) {
-        var query = client.getQuery()
-        query
-          .equalTo('objectId', sequence.get("conversationId"))
-          .find()
-          .then(function (conversations) {
-            console.log("查询对话")
-            console.log(conversations)
-            mConversation = conversations[0]
+        client.getConversation(sequence.get("conversationId"))
+          .then(function (conversation) {
+            mConversation = conversation
+            mConversation.join()
             that.receiveMessage()
           }, function (error) {
-            console.log("查询对话失败")
-            console.log(error)
+            console.log("查询对话失败", error)
           })
       } else {
         client.createConversation({
           transient: true,
         }).then(function (conversation) {
-          console.log("创建对话")
-          console.log(conversation)
           mConversation = conversation
           sequence.set("conversationId", conversation.id)
           sequence.save()
+          mConversation.join()
           that.receiveMessage()
         }, function (error) {
-          console.log("创建对话失败")
-          console.log(error)
+          console.log("创建对话失败", error)
         })
       }
     })
   },
 
-  receiveMessage() {
+  receiveMessage: function () {
+    var that = this
     var sequence = this.data.sequence
-    var idiomList = this.data.idiomList
     mClient.on('message', function (message, conversation) {
-      if (conversation.id != mConversation.id ||
-        message.text == idiomList.length.toString()) {
-        return
-      }
       if (sequence.get("challenger").id.length == 0) {
-        this.getSequence()
+        that.getSequence()
       }
-      this.getIdioms()
+      that.getIdioms()
     })
   },
 
-  getIdioms() {
+  getIdioms: function () {
     util.showLoading()
     var that = this
     var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
@@ -150,14 +136,14 @@ Page({
     var query = new AV.Query('Idiom')
     query.equalTo('sequence', sequence)
     query.descending('createdAt')
-    query.find().then(function (idiomList) {
+    query.find().then(idiomList => {
       util.hideLoading()
       wx.stopPullDownRefresh()
-      console.log("获取成语")
-      console.log(idiomList)
       that.setData({
         idiomList: idiomList
       })
+    }, err => {
+      console.log("查询成语失败", error)
     })
   },
 
@@ -174,13 +160,10 @@ Page({
       }
       sequence.set('challenger', challenger)
       sequence.save().then(function (res) {
-        console.log("保存挑战者")
-        console.log(res)
         that.getIdioms()
       }, function (error) {
-        console.log("保存挑战者失败")
-        console.log(error)
-      }).catch(console.error)
+        console.log("保存挑战者失败", error)
+      })
     }
     this.setData({
       sequence: sequence
@@ -193,8 +176,6 @@ Page({
   getUserInfo: function (res) {
     var app = getApp()
     if (res.detail.userInfo) {
-      console.log("成功获取用户信息")
-      console.log(res)
       app.updateUserInfo(res.detail.userInfo, this.getPremissionSuccess)
     }
   },
@@ -235,8 +216,6 @@ Page({
       AV.Cloud.run('pinyin', { hanzi: inputIdiom }).then(function (pinyin) {
         util.hideLoading()
         that.data.inputIdiomPinyin = pinyin
-        console.log("转换拼音")
-        console.log(pinyin)
         if (that.checkPinyin(pinyin[0], lastIdiom.get("pinyin")[3])) {
           that.saveIdiom()
         } else {
@@ -245,8 +224,7 @@ Page({
           })
         }
       }, function (err) {
-        console.log("转换拼音失败")
-        console.log(err)
+        console.log("转换拼音失败", err)
       })
     } else {
       wx.showModal({
@@ -255,7 +233,7 @@ Page({
     }
   },
 
-  checkPinyin(pinyin1, pinyin2) {
+  checkPinyin: function (pinyin1, pinyin2) {
     var canConnect = false
     pinyin1.forEach(function (value1) {
       pinyin2.forEach(function (value2) {
@@ -294,21 +272,16 @@ Page({
         userSequenceMap.set('sequence', sequence)
         userSequenceMap.save().then(function (res) {
           // 成功保存
-          console.log("建立用户和接龙的关系")
-          console.log(res)
-        }, function (error) {
+        }, function (err) {
           util.hideLoading()
           // 异常处理
-          console.log("建立用户和接龙的关系失败")
-          console.error(error.message)
+          console.log("建立用户和接龙的关系失败", err)
         })
       } else {
         util.hideLoading()
       }
     }, function (err) {
-      // 处理调用失败
-      console.log("查找用户、群关系失败")
-      console.log(err)
+      console.log("查找用户、群关系失败", err)
     })
 
     sequence.set("lastIdiom", this.data.inputIdiom)
@@ -326,8 +299,6 @@ Page({
     idiom.save().then(function (res) {
       util.hideLoading()
       //成功保存记录
-      console.log("保存成语")
-      console.log(res)
       getApp().globalData.refreshSequenceList = true
       wx.showToast({
         title: '创建成功'
@@ -335,16 +306,15 @@ Page({
       that.setData({
         showInput: false
       })
-      // 发送消息
-      var size = idiomList.length + 1
-      mConversation.send(new TextMessage(size.toString()))
       // 刷新列表
       that.getIdioms()
-    }, function (error) {
+      console.log(new TextMessage(that.data.inputIdiom))
+      // 发送消息
+      mConversation.send(new TextMessage(that.data.inputIdiom))
+    }, function (err) {
       util.hideLoading()
-      console.log("保存成语失败")
-      console.log(error)
-    }).catch(console.error)
+      console.log("保存成语失败", err)
+    })
   },
 
   /**
@@ -373,14 +343,14 @@ Page({
     }
   },
 
-  /**
-    * 生命周期函数--监听页面卸载
-    */
-  onUnload: function () {
-    if (mClient != null) {
-      mClient.close()
-    }
-  },
+  // /**
+  //   * 生命周期函数--监听页面卸载
+  //   */
+  // onUnload: function () {
+  //   if (mClient != null && mConversation != null) {
+  //     mClient.close()
+  //   }
+  // },
 
   /**
    * 获取并处理分享信息
