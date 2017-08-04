@@ -1,7 +1,7 @@
 <import src="../../common/common.wxml" />
 
 <scroll-view class="scroll" scroll-y="true" scroll-into-view="x{{toView}}">
-  <view wx:for="{{idiomList}}" wx:key="{{item.id}}" >
+  <view wx:for="{{idiomList}}" wx:key="{{item.id}}">
     <view class="idiom-item" id="x{{item.id}}">
       <image class="creator-img" src="{{item.creator.img}}" mode="aspectFit" />
       <view class="content">
@@ -11,7 +11,7 @@
         </view>
         <view class="idiom-content">
           <view class="idiom">
-            <image class="background" src="/images/idiom_bg_1.png" mode="aspectFit" />
+            <image class="background" src="{{index%2==0?'/images/idiom_bg_1.png':'/images/idiom_bg_2.png'}}" mode="aspectFit" />
             <view class="text">{{item.idiomNum}}. {{item.value}}</view>
           </view>
           <view class="like">

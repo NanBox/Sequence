@@ -187,7 +187,12 @@ Page({
   setTwoTypeRelation: function () {
     var sequence = this.data.sequence
     if (sequence.get("imgList").length < 2) {
-      sequence.set("imgList", sequence.get("imgList").push(user.get("avatarUrl")))
+      var user = getApp().globalData.user
+      var imgList = sequence.get("imgList")
+      if (imgList == null) {
+        imgList = []
+      }
+      sequence.set("imgList", imgList.push(user.get("avatarUrl")))
       sequence.save()
       this.setData({
         isJoin: true,
@@ -214,6 +219,12 @@ Page({
     userSequenceMap.save(userSequenceMap => {
       that.data.userSequenceMap = userSequenceMap
     })
+    var joinCount = sequence.get("joinCount")
+    if (joinCount == null) {
+      joinCount = 0
+    }
+    sequence.set("joinCount", joinCount + 1)
+    sequence.save()
   },
 
   /**
@@ -275,7 +286,8 @@ Page({
     var that = this
     var sequence = this.data.sequence
     mClient.on('message', function (message, conversation) {
-      if (sequence.get("type") == "two" && sequence.get("imgList").length < 2) {
+      if (sequence.get("type") == "all" ||
+        (sequence.get("type") == "two" && sequence.get("imgList").length < 2)) {
         that.getSequence()
       }
       that.getIdioms()
@@ -411,8 +423,21 @@ Page({
     }
 
     sequence.set("lastIdiom", this.data.inputIdiom)
-    sequence.set("lastIdiomCreator", creator)
     sequence.set("idiomCount", idiomList.length + 1)
+    if (sequence.get("type") == "all") {
+      //保存最近的五个接龙用户头像
+      var imgList = sequence.get("imgList")
+      if (imgList == null) {
+        imgList = []
+      }
+      if (!imgList.includes(user.get("avatarUrl"))) {
+        imgList.push(user.get("avatarUrl"))
+        if (imgList.length > 5) {
+          imgList.splice(0, 1)
+        }
+        sequence.set("imgList", imgList)
+      }
+    }
 
     var idiom = new AV.Object("Idiom")
     idiom.set("value", this.data.inputIdiom)
@@ -455,7 +480,7 @@ Page({
   onShareAppMessage: function () {
     var that = this
     return {
-      title: "一起来玩成语接龙！！",
+      title: "一起来玩成语接龙！",
       path: 'pages/idiom-list/idiom-list?id=' + this.data.id,
       success(res) {
         that.getShareInfo(res.shareTickets[0])
