@@ -1,37 +1,34 @@
 <import src="../../common/common.wxml" />
 
-<template wx:if="{{showInput}}" is="search-bar" />
-
-<!-- <view wx:for="{{idiomList}}" wx:key="{{item.id}}" class="idiom">
-  <view class="num">{{item.idiomNum}}</view>
-  <view class="text">{{item.value}}</view>
-  <view class="creator">
-    <image class="img" src="{{item.creator.img}}" mode="aspectFit" />
-    <view class="name">{{item.creator.name}}</view>
-  </view>
-</view> -->
-
-
-<view wx:for="{{idiomList}}" wx:key="{{item.id}}" class="idiom-item">
-  <image class="creator-img" src="{{item.creator.img}}" mode="aspectFit" />
-  <view class="content">
-    <view class="text-content">
-      <view class="creator-name">{{item.creator.name}}</view>
-      <view class="date">{{item.date}}</view>
-    </view>
-    <view class="idiom-content">
-      <view class="idiom">
-        <image class="background" src="/images/idiom_bg_1.png" mode="aspectFit" />
-        <view class="text">{{item.idiomNum}}. {{item.value}}</view>
-      </view>
-      <view class="like">
-        <image class="img" src="/images/check.png" mode="aspectFit" />
-        <view class="num">66</view>
-      </view>
-      <view class="like">
-        <image class="img" src="/images/check.png" mode="aspectFit" />
-        <view class="num">66</view>
+<scroll-view class="scroll" scroll-y="true" scroll-into-view="x{{toView}}">
+  <view wx:for="{{idiomList}}" wx:key="{{item.id}}" >
+    <view class="idiom-item" id="x{{item.id}}">
+      <image class="creator-img" src="{{item.creator.img}}" mode="aspectFit" />
+      <view class="content">
+        <view class="text-content">
+          <view class="creator-name">{{item.creator.name}}</view>
+          <view class="date">{{item.date}}</view>
+        </view>
+        <view class="idiom-content">
+          <view class="idiom">
+            <image class="background" src="/images/idiom_bg_1.png" mode="aspectFit" />
+            <view class="text">{{item.idiomNum}}. {{item.value}}</view>
+          </view>
+          <view class="like">
+            <image class="img" src="/images/check.png" mode="aspectFit" />
+            <view class="num">66</view>
+          </view>
+          <view class="like">
+            <image class="img" src="/images/check.png" mode="aspectFit" />
+            <view class="num">66</view>
+          </view>
+        </view>
       </view>
     </view>
   </view>
+</scroll-view>
+
+<view class="input-bar">
+  <input class="input" placeholder-class="placeholder" bindinput="onInput" placeholder="请输入四字成语" />
+  <image class="send" src="/images/icon_send_1.png" mode="aspectFit" bindtap="onSubmit" />
 </view>

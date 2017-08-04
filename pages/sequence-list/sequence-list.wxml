@@ -22,7 +22,7 @@
 <template name="sequence-list">
  <view wx:for="{{sequenceList}}" wx:key="{{index}}" class="sequence" bindtap="navigateToIdiomList" id="{{index}}">
     <view class="text">
-      <view class="name">{{item.sequenceName}}</view>
+      <view class="name">{{item.title}}</view>
       <view class="lastIdiom">{{item.idiomCount}}. {{item.lastIdiom}}</view>
     </view>
     <view wx:if="{{item.type=='two'}}" class="two">

@@ -28,6 +28,6 @@
 
 <view class="submit">
   <view class="btn {{isTitleLegal && isIdiomLegal && sequenceType.length > 0? 'clickable' : 'unclickable'}}" bindtap="submit">
-    发布
+    创建
   </view>
 </view>

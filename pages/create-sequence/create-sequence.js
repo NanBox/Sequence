@@ -7,7 +7,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    sequenceName: "",
+    title: "",
     firstIdiom: "",
     isTitleLegal: false,
     isIdiomLegal: false,
@@ -26,7 +26,7 @@ Page({
    */
   onTitleInput: function (event) {
     var value = event.detail.value
-    this.data.sequenceName = value
+    this.data.title = value
     this.setData({
       isTitleLegal: value.length > 0 ? true : false
     })
@@ -67,7 +67,7 @@ Page({
       img: user.get("avatarUrl")
     }
     var params = {
-      sequenceName: this.data.sequenceName,
+      title: this.data.title,
       firstIdiom: this.data.firstIdiom,
       type: this.data.sequenceType,
       creator: creator

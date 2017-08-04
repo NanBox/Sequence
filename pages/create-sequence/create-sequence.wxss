@@ -28,7 +28,6 @@ page {
   border-radius: 12rpx;
   font-size: 28rpx;
   color: #569de8;
-  line-height: 80rpx;
   padding-left: 20rpx;
   padding-right: 20rpx;
 }

@@ -22,6 +22,7 @@ Page({
     userSequenceMap: null,
     isJoin: false,
     canInput: false,
+    toView: ""
 
   },
 
@@ -83,6 +84,9 @@ Page({
       that.data.sequence = sequence
       that.checkRelation()
       that.getConversation()
+      wx.setNavigationBarTitle({
+        title: sequence.get("title"),
+      })
     }, function (error) {
       console.log("获取接龙失败", error)
     })
@@ -298,10 +302,16 @@ Page({
         var hour = date.getHours()
         var minute = date.getMinutes()
         idiom.set("date", year + "-" + month + "-" + day + " " + that.pad(hour) + ":" + that.pad(minute))
+        idiom.set("id", idiom.id)
       })
       that.setData({
         idiomList: idiomList
       })
+      setTimeout(function () {
+        that.setData({
+          toView: idiomList[idiomList.length - 1].id
+        })
+      }, 100)
     }, err => {
       console.log("获取成语列表失败", error)
     })
@@ -341,6 +351,7 @@ Page({
       }
       if (hasThisIdiom) {
         wx.showModal({
+          showCancel: false,
           content: "已经有这个成语了哦",
         })
         return
@@ -353,6 +364,7 @@ Page({
           that.saveIdiom()
         } else {
           wx.showModal({
+            showCancel: false,
             content: "这个成语接不上哦",
           })
         }
@@ -361,6 +373,7 @@ Page({
       })
     } else {
       wx.showModal({
+        showCancel: false,
         content: "请输入四字成语",
       })
     }
@@ -404,7 +417,7 @@ Page({
     var idiom = new AV.Object("Idiom")
     idiom.set("value", this.data.inputIdiom)
     idiom.set("creator", creator)
-    idiom.set("sequenceName", sequence.get("sequenceName"))
+    idiom.set("sequenceTitle", sequence.get("title"))
     idiom.set("pinyin", that.data.inputIdiomPinyin)
     idiom.set("idiomNum", that.data.idiomList.length + 1)
     idiom.set("sequence", sequence)

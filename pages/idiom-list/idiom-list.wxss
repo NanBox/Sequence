@@ -4,10 +4,19 @@ page {
   background-color: #f8f8f8;
 }
 
+.scroll {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 100rpx;
+}
+
 .idiom-item {
   display: flex;
   flex-direction: row;
-  margin-top: 33rpx;
+  padding-top: 33rpx;
 }
 
 .idiom-item .creator-img {
@@ -39,7 +48,7 @@ page {
 
 .idiom-item .content .text-content .date {
   font-size: 26rpx;
-  color: gray;
+  color: #ccc;
 }
 
 .idiom-item .content .idiom-content {
@@ -70,7 +79,7 @@ page {
   margin-left: 25rpx;
 }
 
-.idiom-item .content .idiom-content .like .img{
+.idiom-item .content .idiom-content .like .img {
   width: 35rpx;
   height: 35rpx;
 }
@@ -91,6 +100,34 @@ page {
   font-size: 26rpx;
   color: #c7dcfc;
   margin-left: 20rpx;
+}
+
+.input-bar {
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100rpx;
+  bottom: 0;
+  background-color: white;
+  width: 100%;
+}
+
+.input-bar .input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #569de8;
+  padding-left: 50rpx;
+}
+
+.input-bar .placeholder {
+  color: #9fc3f9;
+}
+
+.input-bar .send {
+  width: 65rpx;
+  height: 65rpx;
+  margin-right: 47rpx;
 }
 
 /* 
