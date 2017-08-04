@@ -11,7 +11,7 @@
   </view>
 </view>
 
-<view class="bottom">
+<!-- <view class="bottom">
 
   <image class="creatorImg" src="{{sequence.creator.img}}" mode="aspectFit" />
 
@@ -27,4 +27,4 @@
     <image class="member-img" src="{{sequence.challenger.img}}" mode="aspectFit"/>
 </button>
 
-</view>
+</view> -->

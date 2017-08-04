@@ -14,10 +14,14 @@ Page({
     sequence: null,
     idiomList: [],
     hasUserInfo: false,
-    isCreator: false,
+    // isCreator: false,
     showInput: false,
     inputIdiom: "",
-    inputIdiomPinyin: []
+    inputIdiomPinyin: [],
+
+    isJoin: false,
+    canInput: false,
+
   },
 
   /**
@@ -30,7 +34,7 @@ Page({
       app.login(this.loginSuccess, this.updateUserSuccess)
     } else {
       this.setData({
-        hasUserInfo: true
+        hasUserInfo: app.globalData.hasUserInfo
       })
       this.getSequence()
       this.getIdioms()
@@ -41,49 +45,183 @@ Page({
     })
   },
 
-  loginSuccess: function () { },
-
-  updateUserSuccess: function () {
+  /**
+   * 登录成功
+   */
+  loginSuccess: function () {
     this.getSequence()
     this.getIdioms()
+  },
+
+  /**
+   * 更新用户信息成功
+   */
+  updateUserSuccess: function () {
     this.setData({
       hasUserInfo: true
     })
   },
 
+  /**
+   * 获取用户信息
+   */
+  getUserInfo: function (res) {
+    var app = getApp()
+    if (res.detail.userInfo) {
+      app.updateUserInfo(res.detail.userInfo, this.updateUserSuccess)
+    }
+  },
+
+  /**
+   * 获取接龙
+   */
   getSequence: function () {
     var that = this
     var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
-    var app = getApp()
-    var user = app.globalData.user
-
     sequence.fetch().then(function () {
       that.data.sequence = sequence
-      var userId = user.id
-      var isCreator = sequence.get("creator").id == userId
-      var isChallenger = sequence.get("challenger").id == userId
-      var showInput = (isCreator || isChallenger) && sequence.get("lastIdiomCreator").id != userId
-      that.setData({
-        isCreator: isCreator,
-        showInput: showInput
-      })
-      // 判断设置挑战者
-      if (!isCreator &&
-        sequence.get("challenger").id.length == 0 &&
-        that.data.hasUserInfo) {
-        that.setChallenger()
-      } else {
-        that.setData({
-          sequence: sequence
-        })
-      }
-      // 创建对话
+      that.checkRelation()
       that.getConversation()
     }, function (error) {
       console.log("获取接龙失败", error)
     })
   },
 
+  /**
+   * 检查用户、接龙关系
+   */
+  checkRelation: function () {
+    var that = this
+    var user = getApp().globalData.user
+    var sequence = this.data.sequence
+    var query = new AV.Query('UserSequenceMap')
+    query.equalTo('user', user)
+    query.equalTo('sequence', sequence)
+    query.first().then(function (userSequenceMap) {
+      if (userSequenceMap != null) {
+        that.data.isJoin = userSequenceMap.get("join")
+        if (!that.data.isJoin && sequence.get("type") == "group") {
+          that.setGroupTypeRelation()
+        }
+        if (that.data.isJoin || sequence.get("type") == "all") {
+          this.setData({
+            canInput: true
+          })
+        }
+      } else {
+        if (sequence.get("type") == "all") {
+          that.setAllTypeRelation()
+        } else if (sequence.get("type") == "group") {
+          that.setGroupTypeRelation()
+        } else if (sequence.get("type") == "two") {
+          that.setTwoTypeRelation()
+        }
+      }
+    }, function (err) {
+      console.log("查找用户、群关系失败", err)
+    })
+  },
+
+  /**
+   * 建立和全平台类型接龙的关系
+   */
+  setAllTypeRelation: function (join) {
+    this.setData({
+      canInput: true
+    })
+    if (join) {
+      this.setJoinRelation()
+    } else {
+      this.setFollowRelation()
+    }
+  },
+
+  /**
+   * 建立和群类型接龙的关系
+   */
+  setGroupTypeRelation: function () {
+    var that = this
+    var shareTicket = getApp().globalData.shareTicket
+    if (shareTicket != null) {
+      var user = getApp().globalData.user
+      var sequence = this.data.sequence
+      wx.getShareInfo({
+        shareTicket: shareTicket,
+        success(res) {
+          var paramsJson = {
+            sessionKey: user.attributes.authData.lc_weapp.session_key,
+            encryptedData: res.encryptedData,
+            iv: res.iv
+          }
+          AV.Cloud.run('decryptData', paramsJson).then(function (data) {
+            if (sequence.get("groupId") == data.openGId) {
+              that.setData({
+                canInput: true
+              })
+              that.setJoinRelation()
+            } else {
+              that.setFollowRelation()
+            }
+          })
+        },
+        fail(err) {
+          util.hideLoading()
+          console.log("获取分享信息失败")
+          console.log(err)
+        }
+      })
+    } else {
+      this.setFollowRelation()
+    }
+  },
+
+  /**
+   * 建立和两人类型接龙的关系
+   */
+  setTwoTypeRelation: function () {
+    var sequence = this.data.sequence
+    if (sequence.get("imgList").length < 2) {
+      sequence.set("imgList", sequence.get("imgList").push(user.get("avatarUrl")))
+      sequence.save()
+      this.setData({
+        canInput: true,
+        sequence: sequence
+      })
+      this.setJoinRelation()
+    } else {
+      this.setFollowRelation()
+    }
+  },
+
+  /**
+   * 建立接龙的参与关系
+   */
+  setJoinRelation: function () {
+    var user = getApp().globalData.user
+    var sequence = this.data.sequence
+    var userSequenceMap = new AV.Object('UserSequenceMap')
+    userSequenceMap.set('user', user)
+    userSequenceMap.set('sequence', sequence)
+    userSequenceMap.set('join', true)
+    userSequenceMap.save()
+  },
+
+  /**
+   * 建立接龙的围观关系
+   */
+  setFollowRelation: function () {
+    var user = getApp().globalData.user
+    var sequence = this.data.sequence
+    var userSequenceMap = new AV.Object('UserSequenceMap')
+    userSequenceMap.set('user', user)
+    userSequenceMap.set('sequence', sequence)
+    userSequenceMap.set('join', false)
+    userSequenceMap.save()
+  },
+
+  /**
+   * 建立实时通信对话
+   */
   getConversation: function () {
     var that = this
     var user = getApp().globalData.user
@@ -93,6 +231,7 @@ Page({
       mClient = client
       if (sequence.get("conversationId") != null &&
         sequence.get("conversationId").length > 0) {
+        console.log(sequence.get("conversationId"))
         client.getConversation(sequence.get("conversationId"))
           .then(function (conversation) {
             mConversation = conversation
@@ -117,80 +256,48 @@ Page({
     })
   },
 
+  /**
+   * 接收消息
+   */
   receiveMessage: function () {
     var that = this
     var sequence = this.data.sequence
     mClient.on('message', function (message, conversation) {
-      if (sequence.get("challenger").id.length == 0) {
-        that.getSequence()
-      }
+      that.getSequence()
       that.getIdioms()
     })
   },
 
+  /**
+   * 获取成语列表
+   */
   getIdioms: function () {
     util.showLoading()
     var that = this
     var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
-
     var query = new AV.Query('Idiom')
     query.equalTo('sequence', sequence)
-    query.descending('createdAt')
+    query.ascending('createdAt')
     query.find().then(idiomList => {
       util.hideLoading()
-      wx.stopPullDownRefresh()
       that.setData({
         idiomList: idiomList
       })
     }, err => {
-      console.log("查询成语失败", error)
-    })
-  },
-
-  setChallenger: function () {
-    var that = this
-    var sequence = this.data.sequence
-    if (sequence.get("challenger").id.length == "") {
-      var app = getApp()
-      var user = app.globalData.user
-      var challenger = {
-        id: user.id,
-        name: user.get("nickName"),
-        img: user.get("avatarUrl")
-      }
-      sequence.set('challenger', challenger)
-      sequence.save().then(function (res) {
-        that.getIdioms()
-      }, function (error) {
-        console.log("保存挑战者失败", error)
-      })
-    }
-    this.setData({
-      sequence: sequence
+      console.log("获取成语列表失败", error)
     })
   },
 
   /**
-  * 获取用户信息
-  */
-  getUserInfo: function (res) {
-    var app = getApp()
-    if (res.detail.userInfo) {
-      app.updateUserInfo(res.detail.userInfo, this.getPremissionSuccess)
-    }
-  },
-
-  getPremissionSuccess: function () {
-    this.setChallenger()
-    this.setData({
-      hasUserInfo: true
-    })
-  },
-
+   * 输入成语
+   */
   onInput: function (e) {
     this.data.inputIdiom = e.detail.value
   },
 
+  /**
+   * 提交成语
+   */
   onSubmit: function () {
     var that = this
     var inputIdiom = this.data.inputIdiom
@@ -233,6 +340,9 @@ Page({
     }
   },
 
+  /**
+   * 检查拼音是否能接上
+   */
   checkPinyin: function (pinyin1, pinyin2) {
     var canConnect = false
     pinyin1.forEach(function (value1) {
@@ -245,6 +355,9 @@ Page({
     return canConnect
   },
 
+  /**
+   * 保存接龙成语
+   */
   saveIdiom: function () {
     util.showLoading()
     var that = this
@@ -318,76 +431,51 @@ Page({
   },
 
   /**
-  * 下拉刷新
-  */
-  onPullDownRefresh: function () {
-    var sequence = this.data.sequence
-    if (sequence.get("challenger").id.length == 0) {
-      this.getSequence()
-    }
-    this.getIdioms()
-  },
-
-  /**
   * 分享
   */
   onShareAppMessage: function () {
     var that = this
-
     return {
-      title: "到你接龙了！",
+      title: "一起来玩成语接龙！！",
       path: 'pages/idiom-list/idiom-list?id=' + this.data.id,
-      // success(res) {
-      //   that.getShareInfo(res.shareTickets[0])
-      // }
+      success(res) {
+        that.getShareInfo(res.shareTickets[0])
+      }
     }
   },
 
-  // /**
-  //   * 生命周期函数--监听页面卸载
-  //   */
-  // onUnload: function () {
-  //   if (mClient != null && mConversation != null) {
-  //     mClient.close()
-  //   }
-  // },
+  /**
+    * 生命周期函数--监听页面卸载
+    */
+  onUnload: function () {
+    if (mClient != null && mConversation != null) {
+      mClient.close()
+    }
+  },
 
   /**
-   * 获取并处理分享信息
+   * 获取分享信息
    */
-  // getShareInfo: function (shareTicket) {
-  //   util.showLoading()
-  //   var that = this
-  //   wx.getShareInfo({
-  //     shareTicket: shareTicket,
-  //     success(res) {
-  //       var user = that.data.user
-  //       AV.Cloud.run('decryptData', paramsJson).then(function (data) {
-  //         console.log(data)
-  //         //检查数据库中是否存在该群
-  //         var query = new AV.Query('Group')
-  //         query.equalTo('groupId', data.openGId)
-  //         // 执行查询
-  //         query.first().then(function (group) {
-  //         }, function (err) {
-  //           util.hideLoading()
-  //           // 处理调用失败
-  //           console.log("群查询失败")
-  //           console.log(err)
-  //         })
-  //       })
-  //     },
-  //     fail(err) {
-  //       util.hideLoading()
-  //       // 处理调用失败
-  //       console.log("获取分享信息失败")
-  //       console.log(err)
-  //       wx.showModal({
-  //         title: '要转发到群哟~',
-  //         showCancel: false
-  //       })
-  //     }
-  //   })
-  // },
-
+  getShareInfo: function (shareTicket) {
+    var sequence = this.data.sequence
+    if (sequence.get("type") != "group" || sequence.get("groupId").length > 0) {
+      return
+    }
+    var user = getApp().globalData.user
+    wx.getShareInfo({
+      shareTicket: shareTicket,
+      success(res) {
+        var paramsJson = {
+          sessionKey: user.attributes.authData.lc_weapp.session_key,
+          encryptedData: res.encryptedData,
+          iv: res.iv
+        }
+        AV.Cloud.run('decryptData', paramsJson).then(function (data) {
+          //保存群id
+          sequence.set("groupId", data.openGId)
+          sequence.save()
+        })
+      }
+    })
+  }
 })

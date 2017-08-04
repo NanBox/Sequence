@@ -82,8 +82,8 @@ Page({
           title: '创建成功'
         })
         setTimeout(function () {
-          wx.navigateBack({
-            delta: 1
+          wx.redirectTo({
+            url: '../idiom-list/idiom-list?id=' + sequence.objectId,
           })
         }, 1000)
       }, err => {

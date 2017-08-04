@@ -6,30 +6,10 @@
 </view>
 
 <view wx:if="{{selectJoin}}">
-  <view wx:for="{{joinList}}" wx:key="{{index}}" class="sequence" bindtap="navigateToIdiomList" id="{{index}}">
-    <view class="text">
-      <view class="name">{{item.sequenceName}}</view>
-      <view class="lastIdiom">{{item.idiomCount}}. {{item.lastIdiom}}</view>
-    </view>
-    <view class="two">
-      <image class="img" src="{{item.creator.img}}" mode="aspectFit" />
-      <view class="vs">VS</view>
-      <image class="img" src="{{item.challenger.img.length>0?item.challenger.img:'/images/default_avatar.png'}}" mode="aspectFill" />
-    </view>
-  </view>
+  <template is="sequence-list" data="{{sequenceList:joinList}}" />
 </view>
 <view wx:else>
-  <view wx:for="{{followList}}" wx:key="{{index}}" class="sequence" bindtap="navigateToIdiomList" id="{{index}}">
-    <view class="text">
-      <view class="name">{{item.sequenceName}}</view>
-      <view class="lastIdiom">{{item.idiomCount}}. {{item.lastIdiom}}</view>
-    </view>
-    <view class="two">
-      <image class="img" src="{{item.creator.img}}" mode="aspectFit" />
-      <view class="vs">VS</view>
-      <image class="img" src="{{item.challenger.img.length>0?item.challenger.img:'/images/default_avatar.png'}}" mode="aspectFill" />
-    </view>
-  </view>
+  <template is="sequence-list" data="{{sequenceList:followList}}" />
 </view>
 
 <button wx:if="{{hasUserInfo}}" class="create-button" bindtap="navigateToCreate">
@@ -38,3 +18,17 @@
 <button wx:else class="create-button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
     <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
 </button>
+
+<template name="sequence-list">
+ <view wx:for="{{sequenceList}}" wx:key="{{index}}" class="sequence" bindtap="navigateToIdiomList" id="{{index}}">
+    <view class="text">
+      <view class="name">{{item.sequenceName}}</view>
+      <view class="lastIdiom">{{item.idiomCount}}. {{item.lastIdiom}}</view>
+    </view>
+    <view wx:if="{{item.type=='two'}}" class="two">
+      <image class="img" src="{{item.creator.img}}" mode="aspectFit" />
+      <view class="vs">VS</view>
+      <image class="img" src="{{item.challenger.img.length>0?item.challenger.img:'/images/default_avatar.png'}}" mode="aspectFill" />
+    </view>
+  </view>
+</template>

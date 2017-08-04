@@ -14,8 +14,8 @@ Page({
   },
 
   /**
-    * 生命周期函数--监听页面加载
-    */
+   * 生命周期函数--监听页面加载
+   */
   onLoad: function () {
     var app = getApp()
     app.login(this.loginSuccess, this.updateUserSuccess)
@@ -38,15 +38,15 @@ Page({
   },
 
   /**
-    * 登录成功
-    */
+   * 登录成功
+   */
   loginSuccess: function () {
     this.getSequences()
   },
 
   /**
-    * 更新用户信息成功
-    */
+   * 更新用户信息成功
+   */
   updateUserSuccess: function () {
     this.setData({
       hasUserInfo: true
@@ -54,8 +54,8 @@ Page({
   },
 
   /**
-    * 获取接龙
-    */
+   * 获取接龙
+   */
   getSequences: function () {
     if (this.data.selectJoin) {
       this.getJoinSequences()
@@ -65,8 +65,8 @@ Page({
   },
 
   /**
-    * 获取参与的接龙
-    */
+   * 获取参与的接龙
+   */
   getJoinSequences: function () {
     util.showLoading()
     var that = this
@@ -87,8 +87,8 @@ Page({
   },
 
   /**
-    * 获取围观的接龙
-    */
+   * 获取围观的接龙
+   */
   getFollowSequences: function () {
     util.showLoading()
     var that = this
@@ -109,8 +109,8 @@ Page({
   },
 
   /**
-    * 切换标签
-    */
+   * 切换标签
+   */
   switchTab: function (event) {
     var selectJoin = event.currentTarget.id == "join"
     if (selectJoin && !this.data.getJoinComplete) {
@@ -124,8 +124,8 @@ Page({
   },
 
   /**
-    * 跳转接龙详情页面
-    */
+   * 跳转接龙详情页面
+   */
   navigateToIdiomList: function (event) {
     var index = event.currentTarget.id
     var id
@@ -140,8 +140,8 @@ Page({
   },
 
   /**
-    * 跳转创建接龙页面
-    */
+   * 跳转创建接龙页面
+   */
   navigateToCreate: function () {
     wx.navigateTo({
       url: '/pages/create-sequence/create-sequence'
@@ -149,8 +149,8 @@ Page({
   },
 
   /**
-    * 获取用户信息
-    */
+   * 获取用户信息
+   */
   getUserInfo: function (res) {
     var app = getApp()
     if (res.detail.userInfo) {
@@ -160,8 +160,8 @@ Page({
   },
 
   /**
-    * 下拉刷新
-    */
+   * 下拉刷新
+   */
   onPullDownRefresh: function () {
     this.getSequences()
   }
