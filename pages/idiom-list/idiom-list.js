@@ -218,13 +218,17 @@ Page({
     userSequenceMap.set('join', true)
     userSequenceMap.save(userSequenceMap => {
       that.data.userSequenceMap = userSequenceMap
+      // 更新参与人数
+      var query = new AV.Query('UserSequenceMap')
+      query.equalTo('sequence', sequence)
+      query.equalTo('join', true)
+      query.count().then(count => {
+        sequence.set("joinCount", count)
+        sequence.save()
+      }, error => {
+        throw new AV.Cloud.Error('查询参与人数失败')
+      })
     })
-    var joinCount = sequence.get("joinCount")
-    if (joinCount == null) {
-      joinCount = 0
-    }
-    sequence.set("joinCount", joinCount + 1)
-    sequence.save()
   },
 
   /**
@@ -489,15 +493,6 @@ Page({
   },
 
   /**
-    * 生命周期函数--监听页面卸载
-    */
-  onUnload: function () {
-    if (mClient != null && mConversation != null) {
-      mClient.close()
-    }
-  },
-
-  /**
    * 获取分享信息
    */
   getShareInfo: function (shareTicket) {
@@ -521,5 +516,14 @@ Page({
         })
       }
     })
-  }
+  },
+
+  /**
+  * 生命周期函数--监听页面卸载
+  */
+  onUnload: function () {
+    if (mClient != null) {
+      mClient.close()
+    }
+  },
 })
