@@ -70,7 +70,7 @@ page {
   font-size: 32rpx;
   font-weight: bold;
   color: white;
-  top: 55rpx;
+  top: 50rpx;
   left: 38rpx;
 }
 
