@@ -4,10 +4,28 @@ page {
   background-color: #f8f8f8;
 }
 
-.my-sequence {
-  color: gray;
-  font-size: 32rpx;
-  margin: 20rpx;
+.tab-bar {
+  display: flex;
+  flex-direction: row;
+  height: 90rpx;
+}
+
+.tab-bar .tab {
+  flex: 1;
+  text-align: center;
+  line-height: 90rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.tab-bar .select {
+  color: #569de8;
+  border-bottom: 4rpx solid #569de8;
+}
+
+.tab-bar .unselect {
+  color: #c7dcfc;
+  border-bottom: 1rpx solid #eee;
 }
 
 .sequence {
@@ -18,7 +36,7 @@ page {
   height: 120rpx;
   padding-left: 30rpx;
   padding-right: 30rpx;
-  border-bottom: 1rpx #eee solid;
+  border-bottom: 1rpx solid #eee;
 }
 
 .sequence .text {

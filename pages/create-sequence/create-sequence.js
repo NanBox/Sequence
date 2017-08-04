@@ -10,7 +10,8 @@ Page({
     sequenceName: "",
     firstIdiom: "",
     isTitleLegal: false,
-    isIdiomLegal: false
+    isIdiomLegal: false,
+    sequenceType: ""
   },
 
   /**
@@ -20,6 +21,9 @@ Page({
 
   },
 
+  /**
+   * 标题输入
+   */
   onTitleInput: function (event) {
     var value = event.detail.value
     this.data.sequenceName = value
@@ -28,6 +32,9 @@ Page({
     })
   },
 
+  /**
+   * 成语输入
+   */
   onIdiomInput: function (event) {
     var value = event.detail.value
     this.data.firstIdiom = value
@@ -36,8 +43,20 @@ Page({
     })
   },
 
+  /**
+   * 选择类型
+   */
+  selectType: function (event) {
+    this.setData({
+      sequenceType: event.currentTarget.id
+    })
+  },
+
+  /**
+   * 提交
+   */
   submit: function () {
-    if (!(this.data.isTitleLegal && this.data.isIdiomLegal)) {
+    if (!(this.data.isTitleLegal && this.data.isIdiomLegal && this.data.sequenceType.length > 0)) {
       return
     }
     var that = this
@@ -50,7 +69,7 @@ Page({
     var params = {
       sequenceName: this.data.sequenceName,
       firstIdiom: this.data.firstIdiom,
-      type: "two",
+      type: this.data.sequenceType,
       creator: creator
     }
     util.showLoading()

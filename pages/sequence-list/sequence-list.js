@@ -5,9 +5,12 @@ const util = require('../../utils/util.js')
 var app = getApp()
 Page({
   data: {
-    sequenceList: [],
-    canShowEmpty: false,
-    hasUserInfo: false
+    joinList: [],
+    followList: [],
+    getJoinComplete: false,
+    getFollowComplete: false,
+    hasUserInfo: false,
+    selectJoin: true
   },
 
   /**
@@ -22,40 +25,102 @@ Page({
     })
   },
 
-  onShow: function (options) {
+  /**
+   * 页面显示
+   */
+  onShow: function () {
     if (getApp().globalData.refreshSequenceList) {
       getApp().globalData.refreshSequenceList = false
-      this.getMySequences()
+      this.data.getJoinComplete = false
+      this.data.getFollowComplete = false
+      this.getSequences()
     }
   },
 
+  /**
+    * 登录成功
+    */
   loginSuccess: function () {
-    this.getMySequences()
+    this.getSequences()
   },
 
+  /**
+    * 更新用户信息成功
+    */
   updateUserSuccess: function () {
     this.setData({
       hasUserInfo: true
     })
   },
 
-  getMySequences: function () {
+  /**
+    * 获取接龙
+    */
+  getSequences: function () {
+    if (this.data.selectJoin) {
+      this.getJoinSequences()
+    } else {
+      this.getFollowSequences()
+    }
+  },
+
+  /**
+    * 获取参与的接龙
+    */
+  getJoinSequences: function () {
     util.showLoading()
     var that = this
     var userId = getApp().globalData.user.id
     AV.Cloud
-      .run('getMySequences', { userId: userId })
-      .then(sequenceList => {
+      .run('getJoinSequences', { userId: userId })
+      .then(joinList => {
         util.hideLoading()
         wx.stopPullDownRefresh()
         that.setData({
-          canShowEmpty: true,
-          sequenceList: sequenceList
+          getJoinComplete: true,
+          joinList: joinList
         })
       }, err => {
         util.hideLoading()
-        console.log("获取接龙失败", err)
+        console.log("获取参与的接龙失败", err)
       })
+  },
+
+  /**
+    * 获取围观的接龙
+    */
+  getFollowSequences: function () {
+    util.showLoading()
+    var that = this
+    var userId = getApp().globalData.user.id
+    AV.Cloud
+      .run('getFollowSequences', { userId: userId })
+      .then(followList => {
+        util.hideLoading()
+        wx.stopPullDownRefresh()
+        that.setData({
+          getFollowComplete: true,
+          followList: followList
+        })
+      }, err => {
+        util.hideLoading()
+        console.log("获取围观的接龙失败", err)
+      })
+  },
+
+  /**
+    * 切换标签
+    */
+  switchTab: function (event) {
+    var selectJoin = event.currentTarget.id == "join"
+    if (selectJoin && !this.data.getJoinComplete) {
+      this.getJoinSequences()
+    } else if (!selectJoin && !this.data.getFollowComplete) {
+      this.getFollowSequences()
+    }
+    this.setData({
+      selectJoin: selectJoin
+    })
   },
 
   /**
@@ -63,7 +128,12 @@ Page({
     */
   navigateToIdiomList: function (event) {
     var index = event.currentTarget.id
-    var id = this.data.sequenceList[index].objectId
+    var id
+    if (this.data.selectJoin) {
+      id = this.data.joinList[index].objectId
+    } else {
+      id = this.data.followList[index].objectId
+    }
     wx.navigateTo({
       url: '/pages/idiom-list/idiom-list?id=' + id
     })
@@ -93,7 +163,7 @@ Page({
     * 下拉刷新
     */
   onPullDownRefresh: function () {
-    this.getMySequences()
+    this.getSequences()
   }
 
 })
