@@ -173,8 +173,7 @@ Page({
         },
         fail(err) {
           util.hideLoading()
-          console.log("获取分享信息失败")
-          console.log(err)
+          console.log("获取分享信息失败", err)
         }
       })
     } else {
@@ -245,7 +244,6 @@ Page({
       mClient = client
       if (sequence.get("conversationId") != null &&
         sequence.get("conversationId").length > 0) {
-        console.log(sequence.get("conversationId"))
         client.getConversation(sequence.get("conversationId"))
           .then(function (conversation) {
             mConversation = conversation
@@ -277,7 +275,9 @@ Page({
     var that = this
     var sequence = this.data.sequence
     mClient.on('message', function (message, conversation) {
-      that.getSequence()
+      if (sequence.get("type") == "two" && sequence.get("imgList").length < 2) {
+        that.getSequence()
+      }
       that.getIdioms()
     })
   },
