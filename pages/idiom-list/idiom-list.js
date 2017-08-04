@@ -19,6 +19,7 @@ Page({
     inputIdiom: "",
     inputIdiomPinyin: [],
 
+    userSequenceMap: null,
     isJoin: false,
     canInput: false,
 
@@ -99,6 +100,7 @@ Page({
     query.equalTo('sequence', sequence)
     query.first().then(function (userSequenceMap) {
       if (userSequenceMap != null) {
+        that.data.userSequenceMap = userSequenceMap
         that.data.isJoin = userSequenceMap.get("join")
         if (!that.data.isJoin && sequence.get("type") == "group") {
           that.setGroupTypeRelation()
@@ -156,6 +158,7 @@ Page({
           AV.Cloud.run('decryptData', paramsJson).then(function (data) {
             if (sequence.get("groupId") == data.openGId) {
               that.setData({
+                isJoin: true,
                 canInput: true
               })
               that.setJoinRelation()
@@ -184,6 +187,7 @@ Page({
       sequence.set("imgList", sequence.get("imgList").push(user.get("avatarUrl")))
       sequence.save()
       this.setData({
+        isJoin: true,
         canInput: true,
         sequence: sequence
       })
@@ -197,26 +201,32 @@ Page({
    * 建立接龙的参与关系
    */
   setJoinRelation: function () {
+    var that = this
     var user = getApp().globalData.user
     var sequence = this.data.sequence
     var userSequenceMap = new AV.Object('UserSequenceMap')
     userSequenceMap.set('user', user)
     userSequenceMap.set('sequence', sequence)
     userSequenceMap.set('join', true)
-    userSequenceMap.save()
+    userSequenceMap.save(userSequenceMap => {
+      that.data.userSequenceMap = userSequenceMap
+    })
   },
 
   /**
    * 建立接龙的围观关系
    */
   setFollowRelation: function () {
+    var that = this
     var user = getApp().globalData.user
     var sequence = this.data.sequence
     var userSequenceMap = new AV.Object('UserSequenceMap')
     userSequenceMap.set('user', user)
     userSequenceMap.set('sequence', sequence)
     userSequenceMap.set('join', false)
-    userSequenceMap.save()
+    userSequenceMap.save(userSequenceMap => {
+      that.data.userSequenceMap = userSequenceMap
+    })
   },
 
   /**
@@ -280,12 +290,28 @@ Page({
     query.ascending('createdAt')
     query.find().then(idiomList => {
       util.hideLoading()
+      idiomList.forEach(function (idiom) {
+        var date = new Date(idiom.createdAt)
+        var year = date.getFullYear()
+        var month = date.getMonth() + 1
+        var day = date.getDate()
+        var hour = date.getHours()
+        var minute = date.getMinutes()
+        idiom.set("date", year + "-" + month + "-" + day + " " + that.pad(hour) + ":" + that.pad(minute))
+      })
       that.setData({
         idiomList: idiomList
       })
     }, err => {
       console.log("获取成语列表失败", error)
     })
+  },
+
+  /**
+   * 两位数补零
+   */
+  pad: function (num) {
+    return (Array(2).join(0) + num).slice(-2)
   },
 
   /**
@@ -302,7 +328,7 @@ Page({
     var that = this
     var inputIdiom = this.data.inputIdiom
     var idiomList = this.data.idiomList
-    var lastIdiom = idiomList[0]
+    var lastIdiom = idiomList[idiomList.length - 1]
     if (inputIdiom.length == 4 && util.isChinese(inputIdiom)) {
       // 判断是否已有这个成语
       var hasThisIdiom = false
@@ -371,32 +397,6 @@ Page({
       img: user.get("avatarUrl")
     }
 
-    var userQuery = new AV.Query('UserSequenceMap')
-    userQuery.equalTo('user', user)
-    var sequenceQuery = new AV.Query('UserSequenceMap')
-    sequenceQuery.equalTo('sequence', sequence)
-    // 组合查询
-    var mapQuery = AV.Query.and(userQuery, sequenceQuery)
-    mapQuery.first().then(function (userSequenceMap) {
-      if (userSequenceMap == null) {
-        //没有则建立联系
-        var userSequenceMap = new AV.Object('UserSequenceMap')
-        userSequenceMap.set('user', user)
-        userSequenceMap.set('sequence', sequence)
-        userSequenceMap.save().then(function (res) {
-          // 成功保存
-        }, function (err) {
-          util.hideLoading()
-          // 异常处理
-          console.log("建立用户和接龙的关系失败", err)
-        })
-      } else {
-        util.hideLoading()
-      }
-    }, function (err) {
-      console.log("查找用户、群关系失败", err)
-    })
-
     sequence.set("lastIdiom", this.data.inputIdiom)
     sequence.set("lastIdiomCreator", creator)
     sequence.set("idiomCount", idiomList.length + 1)
@@ -428,6 +428,12 @@ Page({
       util.hideLoading()
       console.log("保存成语失败", err)
     })
+
+    if (sequence.get("type") == "all" && !this.data.isJoin) {
+      var userSequenceMap = this.data.userSequenceMap
+      userSequenceMap.set("join", true)
+      userSequenceMap.save()
+    }
   },
 
   /**

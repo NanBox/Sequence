@@ -1,50 +1,99 @@
 @import "../../common/common.wxss";
 
 page {
-  background-color: #eee;
+  background-color: #f8f8f8;
 }
 
-.idiom {
+.idiom-item {
+  display: flex;
+  flex-direction: row;
+  margin-top: 33rpx;
+}
+
+.idiom-item .creator-img {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 100%;
+  margin-left: 30rpx;
+}
+
+.idiom-item .content {
+  display: flex;
+  flex-direction: column;
+  margin-right: 30rpx;
+}
+
+.idiom-item .content .text-content {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 20rpx;
-  background-color: white;
-  height: 100rpx;
+  height: 38rpx;
+  margin-left: 20rpx;
 }
 
-.idiom .num {
+.idiom-item .content .text-content .creator-name {
+  flex: 1;
+  font-size: 28rpx;
+  color: #569de8;
+}
+
+.idiom-item .content .text-content .date {
   font-size: 26rpx;
   color: gray;
-  margin-left: 40rpx;
 }
 
-.idiom .text {
-  font-size: 26rpx;
-  color: gray;
-  margin-left: 40rpx;
-}
-
-.idiom .creator {
+.idiom-item .content .idiom-content {
   display: flex;
-  width: 120rpx;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-left: 40rpx;
+  flex-direction: row;
 }
 
-.idiom .creator .img {
-  height: 50rpx;
-  width: 50rpx;
-  border-radius: 100%;
+.idiom-item .content .idiom-content .idiom {
+  position: relative;
 }
 
-.idiom .creator .name {
+.idiom-item .content .idiom-content .idiom .background {
+  width: 390rpx;
+  height: 151rpx;
+}
+
+.idiom-item .content .idiom-content .idiom .text {
+  position: absolute;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: white;
+  top: 55rpx;
+  left: 38rpx;
+}
+
+.idiom-item .content .idiom-content .like {
+  margin-top: 53rpx;
+  margin-left: 25rpx;
+}
+
+.idiom-item .content .idiom-content .like .img{
+  width: 35rpx;
+  height: 35rpx;
+}
+
+.idiom-item .content .idiom-content .like .num {
   font-size: 26rpx;
-  color: gray;
+  color: #c7dcfc;
+  margin-left: 20rpx;
 }
 
+.idiom-item .content .idiom-content .unlike {
+  width: 35rpx;
+  height: 35rpx;
+  margin-left: 55rpx;
+}
+
+.idiom-item .content .idiom-content .unlike-num {
+  font-size: 26rpx;
+  color: #c7dcfc;
+  margin-left: 20rpx;
+}
+
+/* 
 .bottom {
   position: fixed;
   display: flex;
@@ -56,9 +105,9 @@ page {
   bottom: 0;
   background-color: white;
   font-size: 30rpx;
-}
+} */
 
-.bottom .creatorImg {
+/* .bottom .creatorImg {
   width: 80rpx;
   height: 80rpx;
   margin-left: 80rpx;
@@ -85,4 +134,4 @@ page {
   font-size: 32rpx;
   color: #1c1c1c;
   font-weight: bold;
-}
+} */

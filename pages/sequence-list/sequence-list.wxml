@@ -26,9 +26,9 @@
       <view class="lastIdiom">{{item.idiomCount}}. {{item.lastIdiom}}</view>
     </view>
     <view wx:if="{{item.type=='two'}}" class="two">
-      <image class="img" src="{{item.creator.img}}" mode="aspectFit" />
+      <image class="img" src="{{item.imgList[0]}}" mode="aspectFit" />
       <view class="vs">VS</view>
-      <image class="img" src="{{item.challenger.img.length>0?item.challenger.img:'/images/default_avatar.png'}}" mode="aspectFill" />
+      <image class="img" src="{{item.imgList[1].length>0?item.imgList[1]:'/images/default_avatar.png'}}" mode="aspectFill" />
     </view>
   </view>
 </template>
