@@ -26,23 +26,23 @@ page {
 }
 
 .img-list-width1 {
-  width: 84rpx;
+  width: 48rpx;
 }
 
 .img-list-width2 {
-  width: 124rpx;
+  width: 88rpx;
 }
 
 .img-list-width3 {
-  width: 164rpx;
+  width: 128rpx;
 }
 
 .img-list-width4 {
-  width: 204rpx;
+  width: 168rpx;
 }
 
 .img-list-width5 {
-  width: 244rpx;
+  width: 208rpx;
 }
 
 .img-list .img {
@@ -50,7 +50,6 @@ page {
   width: 48rpx;
   height: 48rpx;
   border-radius: 100%;
-  border: 5rpx solid white;
 }
 
 .img-list .img1 {
@@ -74,7 +73,8 @@ page {
 }
 
 .tool-bar .all-text {
-  margin-left: 15rpx;
+  line-height: 80rpx;
+  margin-left: 20rpx;
 }
 
 .tool-bar .two {
@@ -175,6 +175,8 @@ page {
 }
 
 .idiom-item .content .idiom-content .like {
+  display: flex;
+  flex-direction: row;
   margin-top: 53rpx;
   margin-left: 25rpx;
 }
@@ -187,19 +189,7 @@ page {
 .idiom-item .content .idiom-content .like .num {
   font-size: 26rpx;
   color: #c7dcfc;
-  margin-left: 20rpx;
-}
-
-.idiom-item .content .idiom-content .unlike {
-  width: 35rpx;
-  height: 35rpx;
-  margin-left: 55rpx;
-}
-
-.idiom-item .content .idiom-content .unlike-num {
-  font-size: 26rpx;
-  color: #c7dcfc;
-  margin-left: 20rpx;
+  margin-left: 15rpx;
 }
 
 .hint {

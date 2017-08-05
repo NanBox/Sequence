@@ -547,7 +547,8 @@ Page({
    */
   getShareInfo: function (shareTicket) {
     var sequence = this.data.sequence
-    if (sequence.get("type") != "group" || sequence.get("groupId").length > 0) {
+    if (sequence.get("type") != "group" ||
+      sequence.get("groupId").length > 0) {
       return
     }
     var user = getApp().globalData.user
