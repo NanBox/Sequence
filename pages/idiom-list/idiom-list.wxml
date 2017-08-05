@@ -1,6 +1,6 @@
 <import src="../../common/common.wxml" />
 
-<scroll-view class="scroll" scroll-y="true" scroll-into-view="x{{toView}}">
+<scroll-view class="scroll {{canInput?'canInput':'cantInput'}}" scroll-y="true" scroll-into-view="x{{toView}}">
   <view wx:for="{{idiomList}}" wx:key="{{item.id}}">
     <view class="idiom-item" id="x{{item.id}}">
       <image class="creator-img" src="{{item.creator.img}}" mode="aspectFit" />
@@ -26,9 +26,12 @@
       </view>
     </view>
   </view>
+  <view wx:if="{{isLastCreator}}" class="hint">
+    <view class="text"> 不能接自己的成语，等待他人接龙</view>
+  </view>
 </scroll-view>
 
-<view class="input-bar">
-  <input class="input" placeholder-class="placeholder" bindinput="onInput" placeholder="请输入四字成语" />
-  <image class="send" src="/images/icon_send_1.png" mode="aspectFit" bindtap="onSubmit" />
+<view wx:if="{{canInput}}" class="input-bar">
+  <input class="input" placeholder-class="placeholder" bindinput="onInput" placeholder="请输入四字成语" value="{{inputValue}}" />
+  <image class="send" src="{{canSend?'/images/icon_send_2.png':'/images/icon_send_1.png'}}" mode="aspectFit" bindtap="onSubmit" />
 </view>

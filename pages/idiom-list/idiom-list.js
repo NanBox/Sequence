@@ -14,15 +14,16 @@ Page({
     sequence: null,
     idiomList: [],
     hasUserInfo: false,
-    // isCreator: false,
-    showInput: false,
     inputIdiom: "",
     inputIdiomPinyin: [],
 
     userSequenceMap: null,
     isJoin: false,
     canInput: false,
-    toView: ""
+    isLastCreator: false,
+    canSend: false,
+    toView: "",
+    inputValue: ""
 
   },
 
@@ -110,7 +111,7 @@ Page({
           that.setGroupTypeRelation()
         }
         if (that.data.isJoin || sequence.get("type") == "all") {
-          this.setData({
+          that.setData({
             canInput: true
           })
         }
@@ -225,6 +226,11 @@ Page({
       query.count().then(count => {
         sequence.set("joinCount", count)
         sequence.save()
+        if (sequence.get("type") == "all") {
+          that.setData({
+            sequence: sequence
+          })
+        }
       }, error => {
         throw new AV.Cloud.Error('查询参与人数失败')
       })
@@ -304,6 +310,7 @@ Page({
   getIdioms: function () {
     util.showLoading()
     var that = this
+    var user = getApp().globalData.user
     var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
     var query = new AV.Query('Idiom')
     query.equalTo('sequence', sequence)
@@ -320,14 +327,19 @@ Page({
         idiom.set("date", year + "-" + month + "-" + day + " " + that.pad(hour) + ":" + that.pad(minute))
         idiom.set("id", idiom.id)
       })
+      var isLastCreator = false
+      if (idiomList[idiomList.length - 1].get("creator").id == user.id) {
+        isLastCreator = true
+      }
       that.setData({
-        idiomList: idiomList
+        idiomList: idiomList,
+        isLastCreator: isLastCreator
       })
       setTimeout(function () {
         that.setData({
           toView: idiomList[idiomList.length - 1].id
         })
-      }, 100)
+      }, 300)
     }, err => {
       console.log("获取成语列表失败", error)
     })
@@ -344,55 +356,66 @@ Page({
    * 输入成语
    */
   onInput: function (e) {
-    this.data.inputIdiom = e.detail.value
+    var inputIdiom = e.detail.value
+    var canSend
+    if (inputIdiom.length == 4 &&
+      util.isChinese(inputIdiom) &&
+      !this.data.isLastCreator &&
+      this.data.canInput) {
+      this.data.inputIdiom = e.detail.value
+      canSend = true
+    } else {
+      this.data.inputIdiom = ""
+      canSend = false
+    }
+    if (this.data.canSend != canSend) {
+      this.setData({
+        canSend: canSend
+      })
+    }
   },
 
   /**
    * 提交成语
    */
   onSubmit: function () {
+    util.showLoading()
+    if (this.data.inputIdiom.length == 0) {
+      return
+    }
     var that = this
     var inputIdiom = this.data.inputIdiom
     var idiomList = this.data.idiomList
     var lastIdiom = idiomList[idiomList.length - 1]
-    if (inputIdiom.length == 4 && util.isChinese(inputIdiom)) {
-      // 判断是否已有这个成语
-      var hasThisIdiom = false
-      for (var i = 0; i < idiomList.length; i++) {
-        var idiom = idiomList[i]
-        if (inputIdiom == idiom.get("value")) {
-          hasThisIdiom = true
-          break
-        }
-      }
-      if (hasThisIdiom) {
+    // 判断是否已有这个成语
+    var query = new AV.Query('Idiom')
+    query.equalTo('sequence', sequence)
+    query.descending('createdAt')
+    query.count().then(count => {
+      if (count > 0) {
+        util.hideLoading()
         wx.showModal({
           showCancel: false,
-          content: "已经有这个成语了哦",
+          content: "已经有这条成语了哦",
         })
-        return
+      } else {
+        AV.Cloud.run('pinyin', { hanzi: inputIdiom }).then(function (pinyin) {
+          util.hideLoading()
+          that.data.inputIdiomPinyin = pinyin
+          if (that.checkPinyin(pinyin[0], lastIdiom.get("pinyin")[3])) {
+            that.saveIdiom()
+          } else {
+            wx.showModal({
+              showCancel: false,
+              content: "这个成语接不上哦",
+            })
+          }
+        }, function (err) {
+          util.hideLoading()
+          console.log("转换拼音失败", err)
+        })
       }
-      util.showLoading()
-      AV.Cloud.run('pinyin', { hanzi: inputIdiom }).then(function (pinyin) {
-        util.hideLoading()
-        that.data.inputIdiomPinyin = pinyin
-        if (that.checkPinyin(pinyin[0], lastIdiom.get("pinyin")[3])) {
-          that.saveIdiom()
-        } else {
-          wx.showModal({
-            showCancel: false,
-            content: "这个成语接不上哦",
-          })
-        }
-      }, function (err) {
-        console.log("转换拼音失败", err)
-      })
-    } else {
-      wx.showModal({
-        showCancel: false,
-        content: "请输入四字成语",
-      })
-    }
+    })
   },
 
   /**
@@ -420,62 +443,85 @@ Page({
     var sequence = this.data.sequence
     var idiomList = this.data.idiomList
 
-    var creator = {
-      id: user.id,
-      name: user.get("nickName"),
-      img: user.get("avatarUrl")
-    }
-
-    sequence.set("lastIdiom", this.data.inputIdiom)
-    sequence.set("idiomCount", idiomList.length + 1)
-    if (sequence.get("type") == "all") {
-      //保存最近的五个接龙用户头像
-      var imgList = sequence.get("imgList")
-      if (imgList == null) {
-        imgList = []
-      }
-      if (!imgList.includes(user.get("avatarUrl"))) {
-        imgList.push(user.get("avatarUrl"))
-        if (imgList.length > 5) {
-          imgList.splice(0, 1)
+    //检查最后一条成语是否和当前一致
+    var query = new AV.Query('Idiom')
+    query.equalTo('sequence', sequence)
+    query.descending('createdAt')
+    query.first().then(idiom => {
+      if (idiom.objectId != idiomList[idiomList.length - 1].objectId) {
+        wx.showModal({
+          showCancel: false,
+          content: "列表有更新"
+        })
+        that.getIdioms()
+      } else {
+        var creator = {
+          id: user.id,
+          name: user.get("nickName"),
+          img: user.get("avatarUrl")
         }
-        sequence.set("imgList", imgList)
+
+        sequence.set("lastIdiom", this.data.inputIdiom)
+        sequence.set("idiomCount", idiomList.length + 1)
+        if (sequence.get("type") == "all") {
+          //保存最近的五个接龙用户头像
+          var imgList = sequence.get("imgList")
+          if (imgList == null) {
+            imgList = []
+          }
+          if (!imgList.includes(user.get("avatarUrl"))) {
+            imgList.push(user.get("avatarUrl"))
+            if (imgList.length > 5) {
+              imgList.splice(0, 1)
+            }
+            sequence.set("imgList", imgList)
+            that.setData({
+              sequence: sequence
+            })
+          }
+        }
+
+        var idiom = new AV.Object("Idiom")
+        idiom.set("value", this.data.inputIdiom)
+        idiom.set("creator", creator)
+        idiom.set("sequenceTitle", sequence.get("title"))
+        idiom.set("pinyin", that.data.inputIdiomPinyin)
+        idiom.set("idiomNum", that.data.idiomList.length + 1)
+        idiom.set("sequence", sequence)
+
+        idiom.save().then(function (res) {
+          util.hideLoading()
+          //成功保存记录
+          getApp().globalData.refreshSequenceList = true
+          wx.showToast({
+            title: '创建成功'
+          })
+          that.data.InputIdiom = ""
+          that.setData({
+            isLastCreator: true,
+            canSend: false,
+            inputValue: ""
+          })
+          // 刷新列表
+          that.getIdioms()
+          console.log(new TextMessage(that.data.inputIdiom))
+          // 发送消息
+          mConversation.send(new TextMessage(that.data.inputIdiom))
+        }, function (err) {
+          util.hideLoading()
+          console.log("保存成语失败", err)
+        })
+
+        if (sequence.get("type") == "all" && !this.data.isJoin) {
+          var userSequenceMap = this.data.userSequenceMap
+          userSequenceMap.set("join", true)
+          userSequenceMap.save()
+        }
       }
-    }
-
-    var idiom = new AV.Object("Idiom")
-    idiom.set("value", this.data.inputIdiom)
-    idiom.set("creator", creator)
-    idiom.set("sequenceTitle", sequence.get("title"))
-    idiom.set("pinyin", that.data.inputIdiomPinyin)
-    idiom.set("idiomNum", that.data.idiomList.length + 1)
-    idiom.set("sequence", sequence)
-
-    idiom.save().then(function (res) {
+    }, err => {
       util.hideLoading()
-      //成功保存记录
-      getApp().globalData.refreshSequenceList = true
-      wx.showToast({
-        title: '创建成功'
-      })
-      that.setData({
-        showInput: false
-      })
-      // 刷新列表
-      that.getIdioms()
-      console.log(new TextMessage(that.data.inputIdiom))
-      // 发送消息
-      mConversation.send(new TextMessage(that.data.inputIdiom))
-    }, function (err) {
-      util.hideLoading()
-      console.log("保存成语失败", err)
+      console.log("查询最后一条成语失败", err)
     })
-
-    if (sequence.get("type") == "all" && !this.data.isJoin) {
-      var userSequenceMap = this.data.userSequenceMap
-      userSequenceMap.set("join", true)
-      userSequenceMap.save()
-    }
   },
 
   /**

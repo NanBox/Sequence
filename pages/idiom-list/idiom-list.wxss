@@ -10,7 +10,14 @@ page {
   left: 0;
   top: 0;
   right: 0;
+}
+
+.canInput {
   bottom: 100rpx;
+}
+
+.cantInput {
+  bottom: 0;
 }
 
 .idiom-item {
@@ -100,6 +107,24 @@ page {
   font-size: 26rpx;
   color: #c7dcfc;
   margin-left: 20rpx;
+}
+
+.hint {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.hint .text {
+  width: 60%;
+  border-radius: 50rpx;
+  line-height: 50rpx;
+  text-align: center;
+  background: #ababab;
+  margin-top: 20rpx;
+  margin-bottom: 20rpx;
+  color: white;
+  font-size: 22rpx;
 }
 
 .input-bar {
