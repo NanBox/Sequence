@@ -357,16 +357,13 @@ Page({
    */
   onInput: function (e) {
     var inputIdiom = e.detail.value
-    var canSend
+    var canSend = false
     if (inputIdiom.length == 4 &&
       util.isChinese(inputIdiom) &&
       !this.data.isLastCreator &&
       this.data.canInput) {
       this.data.inputIdiom = e.detail.value
       canSend = true
-    } else {
-      this.data.inputIdiom = ""
-      canSend = false
     }
     if (this.data.canSend != canSend) {
       this.setData({
@@ -379,10 +376,10 @@ Page({
    * 提交成语
    */
   onSubmit: function () {
-    util.showLoading()
-    if (this.data.inputIdiom.length == 0) {
+    if (!this.data.canSend) {
       return
     }
+    util.showLoading()
     var that = this
     var inputIdiom = this.data.inputIdiom
     var idiomList = this.data.idiomList
