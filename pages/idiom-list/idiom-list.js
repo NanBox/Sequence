@@ -82,13 +82,13 @@ Page({
     var that = this
     var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
     sequence.fetch().then(function () {
+      that.setData({
+        sequence: sequence
+      })
       that.checkRelation()
       that.getConversation()
       wx.setNavigationBarTitle({
         title: sequence.get("title"),
-      })
-      that.setData({
-        sequence: sequence
       })
     }, function (error) {
       console.log("获取接龙失败", error)
