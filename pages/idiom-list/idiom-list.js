@@ -193,8 +193,11 @@ Page({
       if (imgList == null) {
         imgList = []
       }
-      sequence.set("imgList", imgList.push(user.get("avatarUrl")))
+      imgList.push(user.get("avatarUrl"))
+      sequence.set("imgList", imgList)
+      console.log(sequence)
       sequence.save()
+      getApp().globalData.refreshSequenceList = true
       this.setData({
         isJoin: true,
         canInput: true,
@@ -381,11 +384,13 @@ Page({
     }
     util.showLoading()
     var that = this
+    var sequence = this.data.sequence
     var inputIdiom = this.data.inputIdiom
     var idiomList = this.data.idiomList
     var lastIdiom = idiomList[idiomList.length - 1]
     // 判断是否已有这个成语
     var query = new AV.Query('Idiom')
+    query.equalTo("value", inputIdiom)
     query.equalTo('sequence', sequence)
     query.descending('createdAt')
     query.count().then(count => {
@@ -485,6 +490,9 @@ Page({
         idiom.set("pinyin", that.data.inputIdiomPinyin)
         idiom.set("idiomNum", that.data.idiomList.length + 1)
         idiom.set("sequence", sequence)
+
+        console.log(sequence)
+        console.log(idiom)
 
         idiom.save().then(function (res) {
           util.hideLoading()
