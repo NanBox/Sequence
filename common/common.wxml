@@ -1,32 +1,3 @@
-<!--参与人头像-->
-<template name="img-list">
- <view wx:if="{{imgList.length==1}}" class="img-list img-list-width1">
-  <image class="img img1" src="{{imgList[0]}}"/>
-</view>
-<view wx:elif="{{imgList.length==2}}" class="img-list img-list-width2">
-  <image class="img img1" src="{{imgList[0]}}"/>
-  <image class="img img2" src="{{imgList[1]}}"/>
-</view>
-<view wx:elif="{{imgList.length==3}}" class="img-list img-list-width3">
-  <image class="img img1" src="{{imgList[0]}}"/>
-  <image class="img img2" src="{{imgList[1]}}"/>
-  <image class="img img3" src="{{imgList[2]}}"/>
-</view>
-<view wx:elif="{{imgList.length==4}}" class="img-list img-list-width4">
-  <image class="img img1" src="{{imgList[0]}}"/>
-  <image class="img img2" src="{{imgList[1]}}"/>
-  <image class="img img3" src="{{imgList[2]}}"/>
-  <image class="img img4" src="{{imgList[3]}}"/>
-</view> 
-<view wx:elif="{{imgList.length>4}}" class="img-list img-list-width5">
-  <image class="img img1" src="{{imgList[0]}}"/>
-  <image class="img img2" src="{{imgList[1]}}"/>
-  <image class="img img3" src="{{imgList[2]}}"/>
-  <image class="img img4" src="{{imgList[3]}}"/>
-  <image class="img img5" src="{{imgList[4]}}"/>
-</view>
-</template>
-
 <!--空白页面-->
 <template name="empty-page">
   <view class="empty-page">
