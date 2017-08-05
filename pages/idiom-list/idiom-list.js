@@ -491,9 +491,6 @@ Page({
         idiom.set("idiomNum", that.data.idiomList.length + 1)
         idiom.set("sequence", sequence)
 
-        console.log(sequence)
-        console.log(idiom)
-
         idiom.save().then(function (res) {
           util.hideLoading()
           //成功保存记录

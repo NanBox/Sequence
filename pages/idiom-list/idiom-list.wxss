@@ -150,8 +150,8 @@ page {
 }
 
 .input-bar .send {
-  width: 65rpx;
-  height: 65rpx;
+  width: 64rpx;
+  height: 64rpx;
   margin-right: 47rpx;
 }
 

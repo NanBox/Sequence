@@ -59,22 +59,73 @@ page {
   margin-top: 10rpx;
 }
 
+.sequence .all {
+  position: relative;
+  width: 234rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.sequence .all .img {
+  position: absolute;
+  width: 74rpx;
+  height: 74rpx;
+  border-radius: 100%;
+  border: 5rpx solid white;
+}
+
+.sequence .all .img1 {
+  left: 0;
+}
+
+.sequence .all .img2 {
+  left: 40rpx;
+}
+
+.sequence .all .img3 {
+  left: 80rpx;
+}
+
+.sequence .all .img4 {
+  left: 120rpx;
+}
+
+.sequence .all .img5 {
+  left: 160rpx;
+}
+
+.sequence .group {
+  min-width: 234rpx;
+  max-width: 300rpx;
+  font-size: 28rpx;
+  color: gray;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .sequence .two {
+  width: 234rpx;
+  height: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
 .sequence .two .img {
-  width: 72rpx;
-  height: 72rpx;
+  width: 74rpx;
+  height: 74rpx;
   border-radius: 100%;
+  border: 5rpx solid white;
 }
 
 .sequence .two .vs {
   color: gray;
   font-size: 36rpx;
   font-weight: bold;
-  margin-left: 20rpx;
-  margin-right: 20rpx;
+  margin-left: 15rpx;
+  margin-right: 15rpx;
 }

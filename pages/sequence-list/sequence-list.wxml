@@ -25,7 +25,20 @@
       <view class="name">{{item.title}}</view>
       <view class="lastIdiom">{{item.idiomCount}}. {{item.lastIdiom}}</view>
     </view>
-    <view wx:if="{{item.type=='two'}}" class="two">
+    <view wx:if="{{item.type=='all'}}" class="all">
+      <image wx:if="{{item.imgList.length>=1}}" class="img img1" src="{{item.imgList[0]}}"/>
+      <image wx:if="{{item.imgList.length>=2}}" class="img img2" src="{{item.imgList[1]}}"/>
+      <image wx:if="{{item.imgList.length>=3}}" class="img img3" src="{{item.imgList[2]}}"/>
+      <image wx:if="{{item.imgList.length>=4}}" class="img img4" src="{{item.imgList[3]}}"/>
+      <image wx:if="{{item.imgList.length>=5}}" class="img img5" src="{{item.imgList[4]}}"/>
+    </view>
+    <view wx:elif="{{item.type=='group'}}" class="group">
+    <view wx:if="{{item.groupId.length>0}}">
+     <open-data type="groupName" open-gid="{{item.groupId}}" />
+    </view>
+      <view wx:else>未分享到群</view>
+    </view>
+    <view wx:elif="{{item.type=='two'}}" class="two">
       <image class="img" src="{{item.imgList[0]}}" mode="aspectFit" />
       <view class="vs">VS</view>
       <image class="img" src="{{item.imgList[1].length>0?item.imgList[1]:'/images/default_avatar.png'}}" mode="aspectFill" />
