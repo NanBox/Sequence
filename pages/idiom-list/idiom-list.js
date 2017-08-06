@@ -325,6 +325,9 @@ Page({
     query.equalTo('sequence', sequence)
     query.ascending('createdAt')
     query.find().then(idiomList => {
+      if (idiomList == null || idiomList.length == 0) {
+        return
+      }
       var idiomIds = ""
       util.hideLoading()
       idiomList.forEach(function (idiom) {
@@ -345,6 +348,9 @@ Page({
       var cql = "select * from UserIdiomMap where user = pointer('User','" + user.id + "') and idiom in (select * from Idiom where objectId in (" + idiomIds.substring(0, idiomIds.length - 1) + "))"
       AV.Query.doCloudQuery(cql).then(function (data) {
         var userIdiomMapList = data.results
+        if (userIdiomMapList == null || userIdiomMapList.length == 0) {
+          return
+        }
         idiomList.forEach(function (idiom) {
           var likeStatus = 0
           userIdiomMapList.forEach(function (userIdiomMap) {
