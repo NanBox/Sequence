@@ -8,9 +8,7 @@ page {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
   height: 60rpx;
-  line-height: 60rpx;
   background-color: #569de8;
   font-size: 30rpx;
   color: white;
@@ -19,6 +17,7 @@ page {
 
 .tool-bar .text {
   max-width: 620rpx;
+  line-height: 60rpx;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -36,8 +35,7 @@ page {
   position: relative;
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
+  margin-top: 6rpx;
 }
 
 .img-list-width1 {
@@ -45,19 +43,19 @@ page {
 }
 
 .img-list-width2 {
-  width: 88rpx;
+  width: 78rpx;
 }
 
 .img-list-width3 {
-  width: 128rpx;
+  width: 108rpx;
 }
 
 .img-list-width4 {
-  width: 168rpx;
+  width: 138rpx;
 }
 
 .img-list-width5 {
-  width: 208rpx;
+  width: 168rpx;
 }
 
 .img-list .img {
@@ -72,23 +70,23 @@ page {
 }
 
 .img-list .img2 {
-  left: 40rpx;
+  left: 30rpx;
 }
 
 .img-list .img3 {
-  left: 80rpx;
+  left: 60rpx;
 }
 
 .img-list .img4 {
-  left: 120rpx;
+  left: 90rpx;
 }
 
 .img-list .img5 {
-  left: 160rpx;
+  left: 120rpx;
 }
 
 .tool-bar .all-text {
-  line-height: 80rpx;
+  line-height: 60rpx;
   margin-left: 20rpx;
 }
 

@@ -32,7 +32,6 @@ page {
 .sequence {
   display: flex;
   flex-direction: row;
-  align-items: center;
   background: white;
   height: 128rpx;
   padding-left: 30rpx;
@@ -69,8 +68,7 @@ page {
   position: relative;
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
+  margin-top: 27rpx;
 }
 
 .img-list-width1 {
@@ -127,6 +125,7 @@ page {
   font-size: 28rpx;
   color: gray;
   text-align: center;
+  line-height: 128rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

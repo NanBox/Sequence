@@ -56,7 +56,7 @@
     <block wx:if="{{item.groupId.length>0}}">
       <open-data type="groupName" open-gid="{{item.groupId}}" />
     </block>
-    <view wx:else>未分享到群</view>
+    <block wx:else>未分享到群</block>
     </view>
     <view wx:elif="{{item.type=='two'}}" class="two">
   <image class="img" src="{{item.imgList[0]}}" mode="aspectFit" />
