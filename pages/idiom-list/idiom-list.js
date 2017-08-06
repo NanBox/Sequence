@@ -238,6 +238,7 @@ Page({
           })
         }
       }, error => {
+        util.hideLoading()
         throw new AV.Cloud.Error('查询参与人数失败')
       })
     })
@@ -277,6 +278,7 @@ Page({
             mConversation.join()
             that.receiveMessage()
           }, function (error) {
+            util.hideLoading()
             console.log("查询对话失败", error)
           })
       } else {
@@ -289,6 +291,7 @@ Page({
           mConversation.join()
           that.receiveMessage()
         }, function (error) {
+          util.hideLoading()
           console.log("创建对话失败", error)
         })
       }
@@ -322,6 +325,7 @@ Page({
     query.equalTo('sequence', sequence)
     query.ascending('createdAt')
     query.find().then(idiomList => {
+      var idiomIds = ""
       util.hideLoading()
       idiomList.forEach(function (idiom) {
         var date = new Date(idiom.createdAt)
@@ -331,21 +335,45 @@ Page({
         var hour = date.getHours()
         var minute = date.getMinutes()
         idiom.set("date", year + "-" + month + "-" + day + " " + that.pad(hour) + ":" + that.pad(minute))
+        idiomIds += "'" + idiom.id + "',"
       })
       var isLastCreator = false
       if (idiomList[idiomList.length - 1].get("creator").id == user.id) {
         isLastCreator = true
       }
-      that.setData({
-        idiomList: idiomList,
-        isLastCreator: isLastCreator
-      })
-      setTimeout(function () {
-        that.setData({
-          toView: idiomList[idiomList.length - 1].id
+      // 获取点赞状态
+      var cql = "select * from UserIdiomMap where user = pointer('User','" + user.id + "') and idiom in (select * from Idiom where objectId in (" + idiomIds.substring(0, idiomIds.length - 1) + "))"
+      AV.Query.doCloudQuery(cql).then(function (data) {
+        var userIdiomMapList = data.results
+        idiomList.forEach(function (idiom) {
+          var likeStatus = 0
+          userIdiomMapList.forEach(function (userIdiomMap) {
+            if (idiom.id == userIdiomMap.get("idiom").id) {
+              if (userIdiomMap.get("like")) {
+                likeStatus = 1
+              } else {
+                likeStatus = 2
+              }
+            }
+          })
+          idiom.set("likeStatus", likeStatus)
         })
-      }, 500)
+        console.log(idiomList)
+        that.setData({
+          idiomList: idiomList,
+          isLastCreator: isLastCreator
+        })
+        setTimeout(function () {
+          that.setData({
+            toView: idiomList[idiomList.length - 1].id
+          })
+        }, 500)
+      }, function (error) {
+        util.hideLoading()
+        console.log("获取点赞状态失败", error)
+      })
     }, err => {
+      util.hideLoading()
       console.log("获取成语列表失败", error)
     })
   },
