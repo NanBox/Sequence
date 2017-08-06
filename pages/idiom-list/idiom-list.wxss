@@ -9,12 +9,27 @@ page {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  height: 80rpx;
-  line-height: 80rpx;
+  height: 60rpx;
+  line-height: 60rpx;
   background-color: #569de8;
   font-size: 30rpx;
   color: white;
   font-weight: bold;
+}
+
+.tool-bar .text {
+  max-width: 620rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tool-bar .refresh {
+  position: absolute;
+  right: 0;
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 15rpx;
 }
 
 .img-list {
@@ -101,7 +116,7 @@ page {
   position: absolute;
   width: 100%;
   left: 0;
-  top: 80rpx;
+  top: 60rpx;
   right: 0;
 }
 

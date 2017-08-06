@@ -134,15 +134,11 @@ Page({
   /**
    * 建立和全平台类型接龙的关系
    */
-  setAllTypeRelation: function (join) {
+  setAllTypeRelation: function () {
     this.setData({
       canInput: true
     })
-    if (join) {
-      this.setJoinRelation()
-    } else {
-      this.setFollowRelation()
-    }
+    this.setFollowRelation()
   },
 
   /**
@@ -197,7 +193,6 @@ Page({
       }
       imgList.push(user.get("avatarUrl"))
       sequence.set("imgList", imgList)
-      console.log(sequence)
       sequence.save()
       getApp().globalData.refreshSequenceList = true
       this.setData({
@@ -216,13 +211,19 @@ Page({
    */
   setJoinRelation: function () {
     var that = this
-    var user = getApp().globalData.user
     var sequence = this.data.sequence
-    var userSequenceMap = new AV.Object('UserSequenceMap')
-    userSequenceMap.set('user', user)
-    userSequenceMap.set('sequence', sequence)
-    userSequenceMap.set('join', true)
-    userSequenceMap.save(userSequenceMap => {
+    var userSequenceMap
+    if (this.data.userSequenceMap != null) {
+      userSequenceMap = this.data.userSequenceMap
+      userSequenceMap.set("join", true)
+    } else {
+      var user = getApp().globalData.user
+      var userSequenceMap = new AV.Object('UserSequenceMap')
+      userSequenceMap.set('user', user)
+      userSequenceMap.set('sequence', sequence)
+      userSequenceMap.set('join', true)
+    }
+    userSequenceMap.save().then(userSequenceMap => {
       that.data.userSequenceMap = userSequenceMap
       // 更新参与人数
       var query = new AV.Query('UserSequenceMap')
@@ -253,7 +254,7 @@ Page({
     userSequenceMap.set('user', user)
     userSequenceMap.set('sequence', sequence)
     userSequenceMap.set('join', false)
-    userSequenceMap.save(userSequenceMap => {
+    userSequenceMap.save().then(userSequenceMap => {
       that.data.userSequenceMap = userSequenceMap
     })
   },
@@ -344,7 +345,7 @@ Page({
         that.setData({
           toView: idiomList[idiomList.length - 1].id
         })
-      }, 300)
+      }, 500)
     }, err => {
       console.log("获取成语列表失败", error)
     })
@@ -362,6 +363,7 @@ Page({
    */
   onInput: function (e) {
     var inputIdiom = e.detail.value
+    this.data.inputIdiom = e.detail.value
     var canSend = false
     if (inputIdiom.length == 4 &&
       util.isChinese(inputIdiom) &&
@@ -508,7 +510,6 @@ Page({
           })
           // 刷新列表
           that.getIdioms()
-          console.log(new TextMessage(that.data.inputIdiom))
           // 发送消息
           mConversation.send(new TextMessage(that.data.inputIdiom))
         }, function (err) {
@@ -517,15 +518,25 @@ Page({
         })
 
         if (sequence.get("type") == "all" && !this.data.isJoin) {
-          var userSequenceMap = this.data.userSequenceMap
-          userSequenceMap.set("join", true)
-          userSequenceMap.save()
+          that.setJoinRelation()
         }
       }
     }, err => {
       util.hideLoading()
       console.log("查询最后一条成语失败", err)
     })
+  },
+
+  /**
+   * 点击右上角刷新
+   */
+  onRefresh: function () {
+    var sequence = this.data.sequence
+    if (sequence.get("type") == "all" ||
+      (sequence.get("type") == "two" && sequence.get("imgList").length < 2)) {
+      this.getSequence()
+    }
+    this.getIdioms()
   },
 
   /**
