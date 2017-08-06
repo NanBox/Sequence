@@ -56,8 +56,8 @@
 </view>
 
 <scroll-view class="scroll {{canInput?'canInput':'cantInput'}}" scroll-y="true" scroll-into-view="x{{toView}}">
-  <view wx:for="{{idiomList}}" wx:key="{{item.id}}">
-    <view class="idiom-item" id="x{{item.id}}">
+  <view wx:for="{{idiomList}}" wx:key="{{item.objectId}}">
+    <view class="idiom-item" id="x{{item.objectId}}">
       <image class="creator-img" src="{{item.creator.img}}" mode="aspectFit" />
       <view class="content">
         <view class="text-content">
@@ -70,12 +70,12 @@
             <view class="text">{{item.idiomNum}}. {{item.value}}</view>
           </view>
           <view class="like" bindtap="onLike" id="{{index}}">
-            <image class="img" src="/images/check.png" mode="aspectFit" />
-            <view class="num">66</view>
+            <image class="img" src="{{item.likeStatus==1?'/images/check.png':'/images/uncheck.png'}}" mode="aspectFit" />
+            <view class="num">{{item.likeCount>999?'999+':item.likeCount}}</view>
           </view>
           <view class="like" bindtap="onUnLike" id="{{index}}">
-            <image class="img" src="/images/check.png" mode="aspectFit" />
-            <view class="num">66</view>
+            <image class="img" src="{{item.likeStatus==2?'/images/check.png':'/images/uncheck.png'}}" mode="aspectFit" />
+            <view class="num">{{item.unLikeCount>999?'999+':item.unLikeCount}}</view>
           </view>
         </view>
       </view>

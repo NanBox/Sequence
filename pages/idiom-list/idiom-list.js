@@ -331,7 +331,6 @@ Page({
         var hour = date.getHours()
         var minute = date.getMinutes()
         idiom.set("date", year + "-" + month + "-" + day + " " + that.pad(hour) + ":" + that.pad(minute))
-        idiom.set("id", idiom.id)
       })
       var isLastCreator = false
       if (idiomList[idiomList.length - 1].get("creator").id == user.id) {
@@ -356,6 +355,94 @@ Page({
    */
   pad: function (num) {
     return (Array(2).join(0) + num).slice(-2)
+  },
+
+  /**
+   * 点赞
+   */
+  onLike: function (e) {
+    var idiomList = this.data.idiomList
+    var index = e.currentTarget.id
+    var idiom = idiomList[index]
+    if (idiom.get("likeStatus") == 1) {
+      return
+    }
+    // 更新赞、踩页面数据
+    if (idiom.get("likeStatus") == 2) {
+      var unLikeCount = 0
+      if (idiom.get("unLikeCount") != null && idiom.get("unLikeCount") > 0) {
+        likeCount = idiom.get("unLikeCount") - 1
+      }
+      idiom.set("unLikeCount", unLikeCount)
+    }
+    idiom.set("likeStatus", 1)
+    var likeCount = 1
+    if (idiom.get("likeCount") != null && idiom.get("likeCount") > 0) {
+      likeCount = idiom.get("likeCount") + 1
+    }
+    idiom.set("likeCount", likeCount)
+    this.setData({
+      idiomList: idiomList
+    })
+    // 更新数据库
+    var user = getApp().globalData.user
+    var query = new AV.Query('UserIdiomMap')
+    var noDataIdiom = AV.Object.createWithoutData('Idiom', idiom.id)
+    query.equalTo('user', user)
+    query.equalTo('idiom', noDataIdiom)
+    query.first().then(userIdiomMap => {
+      if (userIdiomMap == null) {
+        var userIdiomMap = new AV.Object("UserIdiomMap")
+        userIdiomMap.set("user", user)
+        userIdiomMap.set("idiom", noDataIdiom)
+      }
+      userIdiomMap.set("like", true)
+      userIdiomMap.save()
+    })
+  },
+
+  /**
+   * 点踩
+   */
+  onUnLike: function (e) {
+    var idiomList = this.data.idiomList
+    var index = e.currentTarget.id
+    var idiom = idiomList[index]
+    if (idiom.get("likeStatus") == 2) {
+      return
+    }
+    // 更新赞、踩页面数据
+    if (idiom.get("likeCount") == 1) {
+      var likeCount = 0
+      if (idiom.get("likeCount") != null && idiom.get("likeCount") > 0) {
+        likeCount = idiom.get("likeCount") - 1
+      }
+      idiom.set("likeCount", likeCount)
+    }
+    idiom.set("likeStatus", 2)
+    var unLikeCount = 1
+    if (idiom.get("unLikeCount") != null && idiom.get("unLikeCount") > 0) {
+      unLikeCount = idiom.get("unLikeCount") + 1
+    }
+    idiom.set("unLikeCount", unLikeCount)
+    this.setData({
+      idiomList: idiomList
+    })
+    // 更新数据库
+    var user = getApp().globalData.user
+    var query = new AV.Query('UserIdiomMap')
+    var noDataIdiom = AV.Object.createWithoutData('Idiom', idiom.id)
+    query.equalTo('user', user)
+    query.equalTo('idiom', noDataIdiom)
+    query.first().then(userIdiomMap => {
+      if (userIdiomMap == null) {
+        userIdiomMap = new AV.Object("UserIdiomMap")
+        userIdiomMap.set("user", user)
+        userIdiomMap.set("idiom", noDataIdiom)
+      }
+      userIdiomMap.set("like", false)
+      userIdiomMap.save()
+    })
   },
 
   /**
@@ -490,7 +577,6 @@ Page({
         var idiom = new AV.Object("Idiom")
         idiom.set("value", this.data.inputIdiom)
         idiom.set("creator", creator)
-        idiom.set("sequenceTitle", sequence.get("title"))
         idiom.set("pinyin", that.data.inputIdiomPinyin)
         idiom.set("idiomNum", that.data.idiomList.length + 1)
         idiom.set("sequence", sequence)
