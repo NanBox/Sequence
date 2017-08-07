@@ -10,7 +10,13 @@ Page({
     getJoinComplete: false,
     getFollowComplete: false,
     hasUserInfo: false,
-    selectJoin: true
+    selectJoin: true,
+    currentJoinPage: 0,
+    hasNextJoinPage: true,
+    loadingNextJoinPage: false,
+    currentFollowPage: 0,
+    hasNextFollowPage: true,
+    loadingNextFollowPage: false
   },
 
   /**
@@ -33,7 +39,7 @@ Page({
       getApp().globalData.refreshSequenceList = false
       this.data.getJoinComplete = false
       this.data.getFollowComplete = false
-      this.getSequences()
+      this.getSequencesFirstPage()
     }
   },
 
@@ -41,7 +47,7 @@ Page({
    * 登录成功
    */
   loginSuccess: function () {
-    this.getSequences()
+    this.getSequencesFirstPage()
   },
 
   /**
@@ -54,9 +60,25 @@ Page({
   },
 
   /**
-   * 获取接龙
+   * 首次接龙首页
    */
-  getSequences: function () {
+  getSequencesFirstPage: function () {
+    util.showLoading()
+    if (this.data.selectJoin) {
+      this.data.currentJoinPage = 0
+      this.data.hasNextJoinPage = true
+      this.getJoinSequences()
+    } else {
+      this.data.currentFollowPage = 0
+      this.data.hasNextFollowPage = true
+      this.getFollowSequences()
+    }
+  },
+
+  /**
+   * 首次接龙下一页
+   */
+  getSequencesNextPage: function () {
     if (this.data.selectJoin) {
       this.getJoinSequences()
     } else {
@@ -68,21 +90,46 @@ Page({
    * 获取参与的接龙
    */
   getJoinSequences: function () {
-    util.showLoading()
+    if (!this.data.hasNextJoinPage || this.data.loadingNextJoinPage) {
+      return
+    }
+    this.setData({
+      loadingNextJoinPage: true
+    })
     var that = this
     var userId = getApp().globalData.user.id
+    var currentJoinPage = this.data.currentJoinPage
     AV.Cloud
-      .run('getJoinSequences', { userId: userId })
+      .run('getJoinSequences', { userId: userId, page: currentJoinPage + 1 })
       .then(joinList => {
         util.hideLoading()
         wx.stopPullDownRefresh()
+        that.data.currentJoinPage = currentJoinPage + 1
+        var hasNextJoinPage
+        if (joinList != null && joinList.length == 10) {
+          hasNextJoinPage = true
+        } else {
+          hasNextJoinPage = false
+        }
+        var allJoinList
+        if (that.data.currentJoinPage == 1) {
+          allJoinList = joinList
+        } else {
+          allJoinList = that.data.joinList.concat(joinList)
+        }
         that.setData({
           getJoinComplete: true,
-          joinList: joinList
+          joinList: allJoinList,
+          hasNextJoinPage: hasNextJoinPage,
+          loadingNextJoinPage: false
         })
       }, err => {
         util.hideLoading()
         console.log("获取参与的接龙失败", err)
+        that.setData({
+          hasNextJoinPage: true,
+          loadingNextJoinPage: false
+        })
       })
   },
 
@@ -90,21 +137,46 @@ Page({
    * 获取围观的接龙
    */
   getFollowSequences: function () {
-    util.showLoading()
+    if (!this.data.hasNextFollowPage || this.data.loadingNextFollowPage) {
+      return
+    }
+    this.setData({
+      loadingNextFollowPage: true
+    })
     var that = this
     var userId = getApp().globalData.user.id
+    var currentFollowPage = this.data.currentFollowPage
     AV.Cloud
-      .run('getFollowSequences', { userId: userId })
+      .run('getFollowSequences', { userId: userId, page: currentFollowPage + 1 })
       .then(followList => {
         util.hideLoading()
         wx.stopPullDownRefresh()
+        that.data.currentFollowPage = currentFollowPage + 1
+        var hasNextFollowPage
+        if (followList != null && followList.length == 10) {
+          hasNextFollowPage = true
+        } else {
+          hasNextFollowPage = false
+        }
+        var allFollowList
+        if (that.data.currentFollowPage == 1) {
+          allFollowList = followList
+        } else {
+          allFollowList = that.data.followList.concat(followList)
+        }
         that.setData({
           getFollowComplete: true,
-          followList: followList
+          followList: allFollowList,
+          hasNextFollowPage: hasNextFollowPage,
+          loadingNextFollowPage: false
         })
       }, err => {
         util.hideLoading()
         console.log("获取围观的接龙失败", err)
+        that.setData({
+          hasNextFollowPage: true,
+          loadingNextFollowPage: false
+        })
       })
   },
 
@@ -163,7 +235,14 @@ Page({
    * 下拉刷新
    */
   onPullDownRefresh: function () {
-    this.getSequences()
+    this.getSequencesFirstPage()
+  },
+
+  /**
+   * 上拉加载
+   */
+  onReachBottom: function () {
+    this.getSequencesNextPage()
   }
 
 })

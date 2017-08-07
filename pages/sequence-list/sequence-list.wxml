@@ -5,11 +5,17 @@
   <view class="tab {{selectJoin?'unselect':'select'}}" bindtap="switchTab" id="follow">我围观的</view>
 </view>
 
-<view wx:if="{{selectJoin}}">
+<block wx:if="{{selectJoin}}">
   <template is="sequence-list" data="{{sequenceList:joinList}}" />
-</view>
-<view wx:else>
+</block>
+<block wx:else>
   <template is="sequence-list" data="{{sequenceList:followList}}" />
+</block>
+<view wx:if="{{selectJoin&&joinList.length>0&&hasNextJoinPage}}" class="next-page">
+  <view class="text">{{loadingNextJoinPage?'加载中':'加载更多'}}</view>
+</view>
+<view wx:elif="{{!selectJoin&&followList.length>0&&hasNextFollowPage}}" class="next-page">
+  <view class="text">{{loadingNextFollowPage?'加载中':'加载更多'}}</view>
 </view>
 
 <button wx:if="{{hasUserInfo}}" class="create-button" bindtap="navigateToCreate">

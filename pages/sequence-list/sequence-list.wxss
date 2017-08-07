@@ -153,3 +153,16 @@ page {
   font-weight: bold;
   text-align: center;
 }
+
+.next-page {
+  width: 100%;
+  line-height: 80rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.next-page .text {
+  font-size: 32rpx;
+  color: #ccc;
+}
