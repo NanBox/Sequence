@@ -16,7 +16,7 @@
 
 .empty-page .empty-text {
   font-size: 36rpx;
-  color: gray;
+  color: #ccc;
   font-weight: bold;
   margin-top: 400rpx;
 }

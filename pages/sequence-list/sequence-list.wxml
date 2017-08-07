@@ -6,17 +6,27 @@
 </view>
 
 <block wx:if="{{selectJoin}}">
-  <template is="sequence-list" data="{{sequenceList:joinList}}" />
+  <block wx:if="{{joinList.length>0}}">
+    <template is="sequence-list" data="{{sequenceList:joinList}}" />
+    <view wx:if="{{joinList.length>0&&hasNextJoinPage}}" class="next-page">
+      <view class="text">{{loadingNextJoinPage?'加载中':'加载更多'}}</view>
+    </view>
+  </block>
+  <block wx:elif="{{getJoinComplete}}">
+    <template is="empty-page" data="{{text:'点击右下角按钮创建接龙'}}" />
+  </block>
 </block>
 <block wx:else>
-  <template is="sequence-list" data="{{sequenceList:followList}}" />
+  <block wx:if="{{followList.length>0}}">
+    <template is="sequence-list" data="{{sequenceList:followList}}" />
+    <view wx:if="{{followList.length>0&&hasNextFollowPage}}" class="next-page">
+      <view class="text">{{loadingNextFollowPage?'加载中':'加载更多'}}</view>
+    </view>
+  </block>
+  <block wx:elif="{{getFollowComplete}}">
+    <template is="empty-page" data="{{text:'围观过的接龙会在这里显示'}}" />
+  </block>
 </block>
-<view wx:if="{{selectJoin&&joinList.length>0&&hasNextJoinPage}}" class="next-page">
-  <view class="text">{{loadingNextJoinPage?'加载中':'加载更多'}}</view>
-</view>
-<view wx:elif="{{!selectJoin&&followList.length>0&&hasNextFollowPage}}" class="next-page">
-  <view class="text">{{loadingNextFollowPage?'加载中':'加载更多'}}</view>
-</view>
 
 <button wx:if="{{hasUserInfo}}" class="create-button" bindtap="navigateToCreate">
   <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
