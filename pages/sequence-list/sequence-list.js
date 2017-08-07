@@ -25,10 +25,8 @@ Page({
   onLoad: function () {
     var app = getApp()
     app.login(this.loginSuccess, this.updateUserSuccess)
-    //可获取转发目标信息
-    wx.showShareMenu({
-      withShareTicket: true
-    })
+    // 显示转发按钮
+    wx.showShareMenu()
   },
 
   /**
@@ -96,6 +94,7 @@ Page({
     this.setData({
       loadingNextJoinPage: true
     })
+    var pageSize = 10
     var that = this
     var userId = getApp().globalData.user.id
     var currentJoinPage = this.data.currentJoinPage
@@ -106,7 +105,7 @@ Page({
         wx.stopPullDownRefresh()
         that.data.currentJoinPage = currentJoinPage + 1
         var hasNextJoinPage
-        if (joinList != null && joinList.length == 10) {
+        if (joinList != null && joinList.length == pageSize) {
           hasNextJoinPage = true
         } else {
           hasNextJoinPage = false
@@ -143,6 +142,7 @@ Page({
     this.setData({
       loadingNextFollowPage: true
     })
+    var pageSize = 10
     var that = this
     var userId = getApp().globalData.user.id
     var currentFollowPage = this.data.currentFollowPage
@@ -153,7 +153,7 @@ Page({
         wx.stopPullDownRefresh()
         that.data.currentFollowPage = currentFollowPage + 1
         var hasNextFollowPage
-        if (followList != null && followList.length == 10) {
+        if (followList != null && followList.length == pageSize) {
           hasNextFollowPage = true
         } else {
           hasNextFollowPage = false

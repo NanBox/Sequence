@@ -323,57 +323,19 @@ Page({
     this.setData({
       loadingNextPage: true
     })
-    var currentPage = this.data.currentPage
     var pageSize = 10
     var that = this
     var user = getApp().globalData.user
-    var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
-    var query = new AV.Query('Idiom')
-    query.equalTo('sequence', sequence)
-    query.descending('createdAt')
-    query.limit(pageSize)
-    query.skip((currentPage) * pageSize)
-    query.find().then(idiomList => {
-      util.hideLoading()
-      if (idiomList == null || idiomList.length == 0) {
-        return
-      }
-      idiomList.reverse()
-      var idiomIds = ""
-      idiomList.forEach(function (idiom) {
-        var date = new Date(idiom.createdAt)
-        var year = date.getFullYear()
-        var month = date.getMonth() + 1
-        var day = date.getDate()
-        var hour = date.getHours()
-        var minute = date.getMinutes()
-        idiom.set("date", year + "-" + month + "-" + day + " " + that.pad(hour) + ":" + that.pad(minute))
-        idiomIds += "'" + idiom.id + "',"
-      })
-      var isLastCreator = false
-      if (idiomList[idiomList.length - 1].get("creator").id == user.id) {
-        isLastCreator = true
-      }
-      // 获取点赞状态
-      var cql = "select * from UserIdiomMap where user = pointer('User','" + user.id + "') and idiom in (select * from Idiom where objectId in (" + idiomIds.substring(0, idiomIds.length - 1) + "))"
-      AV.Query.doCloudQuery(cql).then(function (data) {
-        var userIdiomMapList = data.results
-        if (userIdiomMapList != null && userIdiomMapList.length > 0) {
-          idiomList.forEach(function (idiom) {
-            var likeStatus = 0
-            userIdiomMapList.forEach(function (userIdiomMap) {
-              if (idiom.id == userIdiomMap.get("idiom").id) {
-                if (userIdiomMap.get("like")) {
-                  likeStatus = 1
-                } else {
-                  likeStatus = 2
-                }
-              }
-            })
-            idiom.set("likeStatus", likeStatus)
-          })
-        }
-
+    var currentPage = this.data.currentPage
+    var params = {
+      userId: user.id,
+      sequenceId: this.data.id,
+      page: currentPage + 1
+    }
+    AV.Cloud
+      .run('getIdioms', params)
+      .then(idiomList => {
+        util.hideLoading()
         that.data.currentPage = currentPage + 1
         var hasNextPage
         if (idiomList != null && idiomList.length == pageSize) {
@@ -387,35 +349,37 @@ Page({
         } else {
           allIdiomList = idiomList.concat(that.data.idiomList)
         }
-
+        var isLastCreator = false
+        if (allIdiomList[allIdiomList.length - 1].creator.id == user.id) {
+          isLastCreator = true
+        }
         that.setData({
           idiomList: allIdiomList,
           isLastCreator: isLastCreator,
           hasNextPage: hasNextPage,
           loadingNextPage: false
         })
-
         if (that.data.currentPage == 1) {
           setTimeout(function () {
             that.setData({
-              toView: idiomList[idiomList.length - 1].id
+              toView: idiomList[idiomList.length - 1].objectId
             })
           }, 500)
         } else {
           setTimeout(function () {
             that.setData({
-              toView: idiomList[idiomList.length - 1].id
+              toView: idiomList[idiomList.length - 1].objectId
             })
           }, 50)
         }
-      }, function (error) {
+      }, err => {
         util.hideLoading()
-        console.log("获取点赞状态失败", error)
+        console.log("获取成语列表失败", err)
+        that.setData({
+          hasNextPage: true,
+          loadingNextPage: false
+        })
       })
-    }, err => {
-      util.hideLoading()
-      console.log("获取成语列表失败", error)
-    })
   },
 
   /**
