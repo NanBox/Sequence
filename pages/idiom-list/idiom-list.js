@@ -415,7 +415,7 @@ Page({
       isLikeChange = true
       var unLikeCount = 0
       if (idiom.unLikeCount != null && idiom.unLikeCount > 0) {
-        likeCount = idiom.unLikeCount - 1
+        unLikeCount = idiom.unLikeCount - 1
       }
       idiom.unLikeCount = unLikeCount
     }
@@ -449,7 +449,7 @@ Page({
       return
     }
     // 更新赞、踩页面数据
-    if (idiom.likeCount == 1) {
+    if (idiom.likeStatus == 1) {
       isLikeChange = true
       var likeCount = 0
       if (idiom.likeCount != null && idiom.likeCount > 0) {
