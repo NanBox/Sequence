@@ -6,6 +6,11 @@ page {
 
 .tool-bar {
   display: flex;
+  flex-direction: column;
+}
+
+.tool-bar .content {
+  display: flex;
   flex-direction: row;
   justify-content: center;
   height: 60rpx;
@@ -15,7 +20,7 @@ page {
   font-weight: bold;
 }
 
-.tool-bar .text {
+.tool-bar .content .text {
   max-width: 620rpx;
   line-height: 60rpx;
   text-overflow: ellipsis;
@@ -23,12 +28,17 @@ page {
   overflow: hidden;
 }
 
-.tool-bar .refresh {
+.tool-bar .content .refresh {
   position: absolute;
   right: 0;
   width: 48rpx;
   height: 48rpx;
   margin-right: 15rpx;
+}
+
+.tool-bar .shadow {
+  width: 100%;
+  height: 20rpx;
 }
 
 .img-list {
@@ -142,7 +152,6 @@ page {
 .idiom-item .content {
   display: flex;
   flex-direction: column;
-  margin-right: 30rpx;
 }
 
 .idiom-item .content .text-content {
@@ -162,6 +171,7 @@ page {
 .idiom-item .content .text-content .date {
   font-size: 26rpx;
   color: #ccc;
+  margin-right: 20rpx;
 }
 
 .idiom-item .content .idiom-content {
@@ -187,22 +197,30 @@ page {
   left: 38rpx;
 }
 
-.idiom-item .content .idiom-content .like {
+.idiom-item .content .idiom-content .like-content {
+  display: flex;
+  flex-direction: row;
+  margin-left: 20rpx;
+}
+
+.idiom-item .content .idiom-content .like-content .like {
+  width: 120rpx;
+  height: 40rpx;
   display: flex;
   flex-direction: row;
   margin-top: 53rpx;
-  margin-left: 25rpx;
 }
 
-.idiom-item .content .idiom-content .like .img {
-  width: 35rpx;
-  height: 35rpx;
+.idiom-item .content .idiom-content .like-content .like .img {
+  width: 40rpx;
+  height: 40rpx;
 }
 
-.idiom-item .content .idiom-content .like .num {
-  font-size: 26rpx;
+.idiom-item .content .idiom-content .like-content .like .num {
+  font-size: 28rpx;
   color: #c7dcfc;
-  margin-left: 15rpx;
+  margin-left: 5rpx;
+  margin-top: 3rpx;
 }
 
 .hint {
@@ -213,13 +231,11 @@ page {
 
 .hint .text {
   width: 60%;
-  border-radius: 50rpx;
   line-height: 50rpx;
   text-align: center;
-  background: #ababab;
-  margin-top: 20rpx;
+  margin-top: 10rpx;
   margin-bottom: 20rpx;
-  color: white;
+  color: #ccc;
   font-size: 22rpx;
 }
 
@@ -245,8 +261,19 @@ page {
   color: #9fc3f9;
 }
 
-.input-bar .send {
+.input-bar .send-button {
   width: 64rpx;
   height: 64rpx;
+  padding: 0;
+  background-color: white;
   margin-right: 47rpx;
+}
+
+.input-bar .send-button:after {
+  border: none;
+}
+
+.input-bar .send-button .send {
+  width: 64rpx;
+  height: 64rpx;
 }

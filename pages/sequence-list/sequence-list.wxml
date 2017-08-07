@@ -13,10 +13,10 @@
 </view>
 
 <button wx:if="{{hasUserInfo}}" class="create-button" bindtap="navigateToCreate">
-    <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
+  <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
 </button>
 <button wx:else class="create-button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
-    <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
+  <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
 </button>
 
 <template name="sequence-list">
@@ -26,42 +26,42 @@
       <view class="lastIdiom">{{item.idiomCount}}. {{item.lastIdiom}}</view>
     </view>
     <view wx:if="{{item.type=='all'}}" class="all">
-       <view wx:if="{{item.imgList.length==1}}" class="img-list img-list-width1">
-  <image class="img img1" src="{{item.imgList[0]}}" mode="aspectFill"/>
-</view>
-<view wx:elif="{{item.imgList.length==2}}" class="img-list img-list-width2">
-  <image class="img img1" src="{{item.imgList[0]}}" mode="aspectFill"/>
-  <image class="img img2" src="{{item.imgList[1]}}" mode="aspectFill"/>
-</view>
-<view wx:elif="{{item.imgList.length==3}}" class="img-list img-list-width3">
-  <image class="img img1" src="{{item.imgList[0]}}" mode="aspectFill"/>
-  <image class="img img2" src="{{item.imgList[1]}}" mode="aspectFill"/>
-  <image class="img img3" src="{{item.imgList[2]}}" mode="aspectFill"/>
-</view>
-<view wx:elif="{{item.imgList.length==4}}" class="img-list img-list-width4">
-  <image class="img img1" src="{{item.imgList[0]}}" mode="aspectFill"/>
-  <image class="img img2" src="{{item.imgList[1]}}" mode="aspectFill"/>
-  <image class="img img3" src="{{item.imgList[2]}}" mode="aspectFill"/>
-  <image class="img img4" src="{{item.imgList[3]}}" mode="aspectFill"/>
-</view> 
-<view wx:elif="{{item.imgList.length>4}}" class="img-list img-list-width5">
-  <image class="img img1" src="{{item.imgList[0]}}" mode="aspectFill"/>
-  <image class="img img2" src="{{item.imgList[1]}}" mode="aspectFill"/>
-  <image class="img img3" src="{{item.imgList[2]}}" mode="aspectFill"/>
-  <image class="img img4" src="{{item.imgList[3]}}" mode="aspectFill"/>
-  <image class="img img5" src="{{item.imgList[4]}}" mode="aspectFill"/>
-</view>
+      <view wx:if="{{item.imgList.length==1}}" class="img-list img-list-width1">
+      <image class="img img1" src="{{item.imgList[0]}}" mode="aspectFill"/>
     </view>
-    <view wx:elif="{{item.type=='group'}}" class="group">
-    <block wx:if="{{item.groupId.length>0}}">
-      <open-data type="groupName" open-gid="{{item.groupId}}" />
-    </block>
-    <block wx:else>未分享到群</block>
+    <view wx:elif="{{item.imgList.length==2}}" class="img-list img-list-width2">
+      <image class="img img1" src="{{item.imgList[0]}}" mode="aspectFill"/>
+      <image class="img img2" src="{{item.imgList[1]}}" mode="aspectFill"/>
+    </view>
+    <view wx:elif="{{item.imgList.length==3}}" class="img-list img-list-width3">
+      <image class="img img1" src="{{item.imgList[0]}}" mode="aspectFill"/>
+      <image class="img img2" src="{{item.imgList[1]}}" mode="aspectFill"/>
+      <image class="img img3" src="{{item.imgList[2]}}" mode="aspectFill"/>
+    </view>
+    <view wx:elif="{{item.imgList.length==4}}" class="img-list img-list-width4">
+      <image class="img img1" src="{{item.imgList[0]}}" mode="aspectFill"/>
+      <image class="img img2" src="{{item.imgList[1]}}" mode="aspectFill"/>
+      <image class="img img3" src="{{item.imgList[2]}}" mode="aspectFill"/>
+      <image class="img img4" src="{{item.imgList[3]}}" mode="aspectFill"/>
+    </view> 
+    <view wx:elif="{{item.imgList.length>4}}" class="img-list img-list-width5">
+      <image class="img img1" src="{{item.imgList[0]}}" mode="aspectFill"/>
+      <image class="img img2" src="{{item.imgList[1]}}" mode="aspectFill"/>
+      <image class="img img3" src="{{item.imgList[2]}}" mode="aspectFill"/>
+      <image class="img img4" src="{{item.imgList[3]}}" mode="aspectFill"/>
+      <image class="img img5" src="{{item.imgList[4]}}" mode="aspectFill"/>
+    </view>
+    </view>
+      <view wx:elif="{{item.type=='group'}}" class="group">
+      <block wx:if="{{item.groupId.length>0}}">
+        <open-data type="groupName" open-gid="{{item.groupId}}" />
+      </block>
+      <block wx:else>未分享到群</block>
     </view>
     <view wx:elif="{{item.type=='two'}}" class="two">
-  <image class="img" src="{{item.imgList[0]}}" mode="aspectFit" />
-  <view class="vs">VS</view>
-  <image class="img" src="{{item.imgList[1].length>0?item.imgList[1]:'/images/default_avatar.png'}}" mode="aspectFill" />
+      <image class="img" src="{{item.imgList[0]}}" mode="aspectFit" />
+      <view class="vs">VS</view>
+      <image class="img" src="{{item.imgList[1].length>0?item.imgList[1]:'/images/default_avatar.png'}}" mode="aspectFill" />
     </view>
   </view>
 </template>
