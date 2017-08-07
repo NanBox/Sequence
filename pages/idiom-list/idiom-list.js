@@ -16,15 +16,16 @@ Page({
     hasUserInfo: false,
     inputIdiom: "",
     inputIdiomPinyin: [],
-
     userSequenceMap: null,
     isJoin: false,
     canInput: false,
     isLastCreator: false,
     canSend: false,
     toView: "",
-    inputValue: ""
-
+    inputValue: "",
+    currentPage: 0,
+    hasNextPage: true,
+    loadingNextPage: false
   },
 
   /**
@@ -39,6 +40,7 @@ Page({
       this.setData({
         hasUserInfo: app.globalData.hasUserInfo
       })
+      util.showLoading()
       this.getSequence()
       this.getIdioms()
     }
@@ -52,6 +54,7 @@ Page({
    * 登录成功
    */
   loginSuccess: function () {
+    util.showLoading()
     this.getSequence()
     this.getIdioms()
   },
@@ -317,19 +320,26 @@ Page({
    * 获取成语列表
    */
   getIdioms: function () {
-    util.showLoading()
+    this.setData({
+      loadingNextPage: true
+    })
+    var currentPage = this.data.currentPage
+    var pageSize = 10
     var that = this
     var user = getApp().globalData.user
     var sequence = AV.Object.createWithoutData('Sequence', this.data.id)
     var query = new AV.Query('Idiom')
     query.equalTo('sequence', sequence)
-    query.ascending('createdAt')
+    query.descending('createdAt')
+    query.limit(pageSize)
+    query.skip((currentPage) * pageSize)
     query.find().then(idiomList => {
+      util.hideLoading()
       if (idiomList == null || idiomList.length == 0) {
         return
       }
+      idiomList.reverse()
       var idiomIds = ""
-      util.hideLoading()
       idiomList.forEach(function (idiom) {
         var date = new Date(idiom.createdAt)
         var year = date.getFullYear()
@@ -363,15 +373,41 @@ Page({
             idiom.set("likeStatus", likeStatus)
           })
         }
+
+        that.data.currentPage = currentPage + 1
+        var hasNextPage
+        if (idiomList != null && idiomList.length == pageSize) {
+          hasNextPage = true
+        } else {
+          hasNextPage = false
+        }
+        var allIdiomList
+        if (that.data.currentPage == 1) {
+          allIdiomList = idiomList
+        } else {
+          allIdiomList = idiomList.concat(that.data.idiomList)
+        }
+
         that.setData({
-          idiomList: idiomList,
-          isLastCreator: isLastCreator
+          idiomList: allIdiomList,
+          isLastCreator: isLastCreator,
+          hasNextPage: hasNextPage,
+          loadingNextPage: false
         })
-        setTimeout(function () {
-          that.setData({
-            toView: idiomList[idiomList.length - 1].id
-          })
-        }, 500)
+
+        if (that.data.currentPage == 1) {
+          setTimeout(function () {
+            that.setData({
+              toView: idiomList[idiomList.length - 1].id
+            })
+          }, 500)
+        } else {
+          setTimeout(function () {
+            that.setData({
+              toView: idiomList[idiomList.length - 1].id
+            })
+          }, 50)
+        }
       }, function (error) {
         util.hideLoading()
         console.log("获取点赞状态失败", error)
@@ -387,6 +423,16 @@ Page({
    */
   pad: function (num) {
     return (Array(2).join(0) + num).slice(-2)
+  },
+
+  /**
+   * 列表滚动到顶部
+   */
+  scrollToTop: function () {
+    if (!this.data.hasNextPage || this.data.loadingNextPage) {
+      return
+    }
+    this.getIdioms()
   },
 
   /**
@@ -696,6 +742,9 @@ Page({
       (sequence.get("type") == "two" && sequence.get("imgList").length < 2)) {
       this.getSequence()
     }
+    this.data.currentPage = 0
+    this.data.hasNextPage = true
+    util.showLoading()
     this.getIdioms()
   },
 

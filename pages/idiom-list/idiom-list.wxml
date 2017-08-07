@@ -58,7 +58,10 @@
   <image class="shadow" src="/images/toolbar_shadow.png" mode="aspectFill" />
 </view>
 
-<scroll-view class="scroll {{canInput?'canInput':'cantInput'}}" scroll-y="true" scroll-into-view="x{{toView}}">
+<scroll-view class="scroll {{canInput?'canInput':'cantInput'}}" scroll-y="true" scroll-into-view="x{{toView}}" bindscrolltoupper="scrollToTop">
+  <view wx:if="{{idiomList.length>0&&hasNextPage}}" class="hint">
+    <view class="text">{{loadingNextPage?'加载中':'加载更多'}}</view>
+  </view>
   <view wx:for="{{idiomList}}" wx:key="{{item.objectId}}">
     <view class="idiom-item" id="x{{item.objectId}}">
       <image class="creator-img" src="{{item.creator.img}}" mode="aspectFit" />
