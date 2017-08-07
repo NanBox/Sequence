@@ -407,61 +407,34 @@ Page({
     var index = e.currentTarget.id
     var idiom = idiomList[index]
     var isLikeChange = false
-    if (idiom.get("likeStatus") == 1) {
+    if (idiom.likeStatus == 1) {
       return
     }
     // 更新赞、踩页面数据
-    if (idiom.get("likeStatus") == 2) {
+    if (idiom.likeStatus == 2) {
       isLikeChange = true
       var unLikeCount = 0
-      if (idiom.get("unLikeCount") != null && idiom.get("unLikeCount") > 0) {
-        likeCount = idiom.get("unLikeCount") - 1
+      if (idiom.unLikeCount != null && idiom.unLikeCount > 0) {
+        likeCount = idiom.unLikeCount - 1
       }
-      idiom.set("unLikeCount", unLikeCount)
+      idiom.unLikeCount = unLikeCount
     }
-    idiom.set("likeStatus", 1)
+    idiom.likeStatus = 1
     var likeCount = 1
-    if (idiom.get("likeCount") != null && idiom.get("likeCount") > 0) {
-      likeCount = idiom.get("likeCount") + 1
+    if (idiom.likeCount != null && idiom.likeCount > 0) {
+      likeCount = idiom.likeCount + 1
     }
-    idiom.set("likeCount", likeCount)
+    idiom.likeCount = likeCount
     this.setData({
       idiomList: idiomList
     })
     // 更新数据库
     var user = getApp().globalData.user
-    var query = new AV.Query('UserIdiomMap')
-    var noDataIdiom = AV.Object.createWithoutData('Idiom', idiom.id)
-    query.equalTo('user', user)
-    query.equalTo('idiom', noDataIdiom)
-    query.first().then(userIdiomMap => {
-      if (userIdiomMap == null) {
-        var userIdiomMap = new AV.Object("UserIdiomMap")
-        userIdiomMap.set("user", user)
-        userIdiomMap.set("idiom", noDataIdiom)
-      }
-      userIdiomMap.set("like", true)
-      userIdiomMap.save().then(userIdiomMap => {
-        // 更新点赞数量
-        var query = new AV.Query('UserIdiomMap')
-        query.equalTo("idiom", idiom)
-        query.equalTo('like', true)
-        query.count().then(count => {
-          noDataIdiom.set("likeCount", count)
-          noDataIdiom.save()
-        })
-        if (isLikeChange) {
-          // 更新点踩数量
-          var query = new AV.Query('UserIdiomMap')
-          query.equalTo("idiom", idiom)
-          query.equalTo('like', false)
-          query.count().then(count => {
-            noDataIdiom.set("unLikeCount", count)
-            noDataIdiom.save()
-          })
-        }
-      })
-    })
+    var params = {
+      userId: user.id,
+      idiomId: idiom.objectId
+    }
+    AV.Cloud.run('like', params)
   },
 
   /**
@@ -472,61 +445,34 @@ Page({
     var index = e.currentTarget.id
     var idiom = idiomList[index]
     var isLikeChange = false
-    if (idiom.get("likeStatus") == 2) {
+    if (idiom.likeStatus == 2) {
       return
     }
     // 更新赞、踩页面数据
-    if (idiom.get("likeCount") == 1) {
+    if (idiom.likeCount == 1) {
       isLikeChange = true
       var likeCount = 0
-      if (idiom.get("likeCount") != null && idiom.get("likeCount") > 0) {
-        likeCount = idiom.get("likeCount") - 1
+      if (idiom.likeCount != null && idiom.likeCount > 0) {
+        likeCount = idiom.likeCount - 1
       }
-      idiom.set("likeCount", likeCount)
+      idiom.likeCount = likeCount
     }
-    idiom.set("likeStatus", 2)
+    idiom.likeStatus = 2
     var unLikeCount = 1
-    if (idiom.get("unLikeCount") != null && idiom.get("unLikeCount") > 0) {
-      unLikeCount = idiom.get("unLikeCount") + 1
+    if (idiom.unLikeCount != null && idiom.unLikeCount > 0) {
+      unLikeCount = idiom.unLikeCount + 1
     }
-    idiom.set("unLikeCount", unLikeCount)
+    idiom.unLikeCount = unLikeCount
     this.setData({
       idiomList: idiomList
     })
     // 更新数据库
     var user = getApp().globalData.user
-    var query = new AV.Query('UserIdiomMap')
-    var noDataIdiom = AV.Object.createWithoutData('Idiom', idiom.id)
-    query.equalTo('user', user)
-    query.equalTo('idiom', noDataIdiom)
-    query.first().then(userIdiomMap => {
-      if (userIdiomMap == null) {
-        userIdiomMap = new AV.Object("UserIdiomMap")
-        userIdiomMap.set("user", user)
-        userIdiomMap.set("idiom", noDataIdiom)
-      }
-      userIdiomMap.set("like", false)
-      userIdiomMap.save().then(userIdiomMap => {
-        // 更新点踩数量
-        var query = new AV.Query('UserIdiomMap')
-        query.equalTo("idiom", idiom)
-        query.equalTo('like', false)
-        query.count().then(count => {
-          noDataIdiom.set("unLikeCount", count)
-          noDataIdiom.save()
-        })
-        if (isLikeChange) {
-          // 更新点赞数量
-          var query = new AV.Query('UserIdiomMap')
-          query.equalTo("idiom", idiom)
-          query.equalTo('like', true)
-          query.count().then(count => {
-            noDataIdiom.set("likeCount", count)
-            noDataIdiom.save()
-          })
-        }
-      })
-    })
+    var params = {
+      userId: user.id,
+      idiomId: idiom.objectId
+    }
+    AV.Cloud.run('unlike', params)
   },
 
   /**
@@ -579,7 +525,7 @@ Page({
         AV.Cloud.run('pinyin', { hanzi: inputIdiom }).then(function (pinyin) {
           util.hideLoading()
           that.data.inputIdiomPinyin = pinyin
-          if (that.checkPinyin(pinyin[0], lastIdiom.get("pinyin")[3])) {
+          if (that.checkPinyin(pinyin[0], lastIdiom.pinyin[3])) {
             that.saveIdiom()
           } else {
             wx.showModal({
