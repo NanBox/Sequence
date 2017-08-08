@@ -329,53 +329,53 @@ Page({
       page: currentPage + 1
     }
     AV.Cloud.run('getIdioms', params).then(idiomList => {
-        util.hideLoading()
-        that.data.currentPage = currentPage + 1
-        var hasNextPage
-        if (idiomList != null && idiomList.length == pageSize) {
-          hasNextPage = true
-        } else {
-          hasNextPage = false
-        }
-        var allIdiomList
-        if (that.data.currentPage == 1) {
-          allIdiomList = idiomList
-        } else {
-          allIdiomList = idiomList.concat(that.data.idiomList)
-        }
-        var isLastCreator = false
-        if (allIdiomList[allIdiomList.length - 1].creator.id == user.id) {
-          isLastCreator = true
-        }
-        that.setData({
-          idiomList: allIdiomList,
-          isLastCreator: isLastCreator,
-          hasNextPage: hasNextPage,
-          loadingNextPage: false
-        })
-        if (idiomList.length > 0) {
-          if (that.data.currentPage == 1) {
-            setTimeout(function () {
-              that.setData({
-                toView: idiomList[idiomList.length - 1].objectId
-              })
-            }, 500)
-          } else {
-            setTimeout(function () {
-              that.setData({
-                toView: idiomList[idiomList.length - 1].objectId
-              })
-            }, 50)
-          }
-        }
-      }, err => {
-        util.hideLoading()
-        console.log("获取成语列表失败", err)
-        that.setData({
-          hasNextPage: true,
-          loadingNextPage: false
-        })
+      util.hideLoading()
+      that.data.currentPage = currentPage + 1
+      var hasNextPage
+      if (idiomList != null && idiomList.length == pageSize) {
+        hasNextPage = true
+      } else {
+        hasNextPage = false
+      }
+      var allIdiomList
+      if (that.data.currentPage == 1) {
+        allIdiomList = idiomList
+      } else {
+        allIdiomList = idiomList.concat(that.data.idiomList)
+      }
+      var isLastCreator = false
+      if (allIdiomList[allIdiomList.length - 1].creator.id == user.id) {
+        isLastCreator = true
+      }
+      that.setData({
+        idiomList: allIdiomList,
+        isLastCreator: isLastCreator,
+        hasNextPage: hasNextPage,
+        loadingNextPage: false
       })
+      if (idiomList.length > 0) {
+        if (that.data.currentPage == 1) {
+          setTimeout(function () {
+            that.setData({
+              toView: idiomList[idiomList.length - 1].objectId
+            })
+          }, 500)
+        } else {
+          setTimeout(function () {
+            that.setData({
+              toView: idiomList[idiomList.length - 1].objectId
+            })
+          }, 50)
+        }
+      }
+    }, err => {
+      util.hideLoading()
+      console.log("获取成语列表失败", err)
+      that.setData({
+        hasNextPage: true,
+        loadingNextPage: false
+      })
+    })
   },
 
   /**
@@ -545,6 +545,9 @@ Page({
         that.data.currentPage = 0
         that.data.hasNextPage = true
         that.getIdioms()
+        if (sequence.get("type") == "all" && !that.data.isJoin) {
+          that.setJoinRelation()
+        }
         // 发送消息
         mConversation.send(new TextMessage(that.data.inputIdiom))
       } else {

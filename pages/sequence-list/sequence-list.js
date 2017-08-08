@@ -37,7 +37,13 @@ Page({
       getApp().globalData.refreshSequenceList = false
       this.data.getJoinComplete = false
       this.data.getFollowComplete = false
-      this.getSequencesFirstPage()
+      // 刷新两个页面
+      this.data.currentJoinPage = 0
+      this.data.hasNextJoinPage = true
+      this.getJoinSequences()
+      this.data.currentFollowPage = 0
+      this.data.hasNextFollowPage = true
+      this.getFollowSequences()
     }
   },
 

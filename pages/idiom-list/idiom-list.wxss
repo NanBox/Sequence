@@ -204,7 +204,7 @@ page {
 }
 
 .idiom-item .content .idiom-content .like-content .like {
-  width: 120rpx;
+  width: 110rpx;
   height: 40rpx;
   display: flex;
   flex-direction: row;
@@ -236,7 +236,7 @@ page {
   margin-top: 10rpx;
   margin-bottom: 20rpx;
   color: #ccc;
-  font-size: 22rpx;
+  font-size: 24rpx;
 }
 
 .input-bar {
