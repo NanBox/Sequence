@@ -14,11 +14,17 @@
   align-items: center;
 }
 
+.empty-page .img {
+  width: 320rpx;
+  height: 147rpx;
+  margin-top: 280rpx;
+}
+
 .empty-page .empty-text {
-  font-size: 36rpx;
-  color: #ccc;
+  font-size: 24rpx;
+  color: #c7dcfc;
   font-weight: bold;
-  margin-top: 400rpx;
+  margin-top: 25rpx;
 }
 
 /* 创建按钮 */

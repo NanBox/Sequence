@@ -379,13 +379,6 @@ Page({
   },
 
   /**
-   * 两位数补零
-   */
-  pad: function (num) {
-    return (Array(2).join(0) + num).slice(-2)
-  },
-
-  /**
    * 列表滚动到顶部
    */
   scrollToTop: function () {
