@@ -174,7 +174,6 @@ Page({
           })
         },
         fail(err) {
-          util.hideLoading()
           console.log("获取分享信息失败", err)
         }
       })
@@ -241,7 +240,6 @@ Page({
           })
         }
       }, error => {
-        util.hideLoading()
         throw new AV.Cloud.Error('查询参与人数失败')
       })
     })
@@ -281,7 +279,6 @@ Page({
             mConversation.join()
             that.receiveMessage()
           }, function (error) {
-            util.hideLoading()
             console.log("查询对话失败", error)
           })
       } else {
@@ -294,7 +291,6 @@ Page({
           mConversation.join()
           that.receiveMessage()
         }, function (error) {
-          util.hideLoading()
           console.log("创建对话失败", error)
         })
       }
@@ -332,9 +328,7 @@ Page({
       sequenceId: this.data.id,
       page: currentPage + 1
     }
-    AV.Cloud
-      .run('getIdioms', params)
-      .then(idiomList => {
+    AV.Cloud.run('getIdioms', params).then(idiomList => {
         util.hideLoading()
         that.data.currentPage = currentPage + 1
         var hasNextPage
@@ -359,18 +353,20 @@ Page({
           hasNextPage: hasNextPage,
           loadingNextPage: false
         })
-        if (that.data.currentPage == 1) {
-          setTimeout(function () {
-            that.setData({
-              toView: idiomList[idiomList.length - 1].objectId
-            })
-          }, 500)
-        } else {
-          setTimeout(function () {
-            that.setData({
-              toView: idiomList[idiomList.length - 1].objectId
-            })
-          }, 50)
+        if (idiomList.length > 0) {
+          if (that.data.currentPage == 1) {
+            setTimeout(function () {
+              that.setData({
+                toView: idiomList[idiomList.length - 1].objectId
+              })
+            }, 500)
+          } else {
+            setTimeout(function () {
+              that.setData({
+                toView: idiomList[idiomList.length - 1].objectId
+              })
+            }, 50)
+          }
         }
       }, err => {
         util.hideLoading()

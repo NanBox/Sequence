@@ -124,6 +124,7 @@ Page({
         })
       }, err => {
         util.hideLoading()
+        wx.stopPullDownRefresh()
         console.log("获取参与的接龙失败", err)
         that.setData({
           hasNextJoinPage: true,
@@ -172,6 +173,7 @@ Page({
         })
       }, err => {
         util.hideLoading()
+        wx.stopPullDownRefresh()
         console.log("获取围观的接龙失败", err)
         that.setData({
           hasNextFollowPage: true,
