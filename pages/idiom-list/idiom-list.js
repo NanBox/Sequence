@@ -66,6 +66,10 @@ Page({
     this.setData({
       hasUserInfo: true
     })
+    var sequence = this.data.sequence
+    if (sequence.get("type") == "two" && sequence.get("imgList").length < 2) {
+      this.setTwoTypeRelation()
+    }
   },
 
   /**
@@ -187,12 +191,13 @@ Page({
    */
   setTwoTypeRelation: function () {
     var sequence = this.data.sequence
-    if (sequence.get("imgList").length < 2) {
+    if (sequence.get("imgList").length < 2 && this.data.hasUserInfo) {
       var user = getApp().globalData.user
       var imgList = sequence.get("imgList")
       if (imgList == null) {
         imgList = []
       }
+      console.log(user)
       imgList.push(user.get("avatarUrl"))
       sequence.set("imgList", imgList)
       sequence.save()
@@ -505,6 +510,7 @@ Page({
       },
       sequence: {
         id: sequence.id,
+        type: sequence.get("type"),
         imgList: sequence.get("imgList")
       },
       idiomValue: this.data.inputIdiom,
