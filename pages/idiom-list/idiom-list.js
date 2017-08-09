@@ -530,6 +530,9 @@ Page({
               sequence: sequence
             })
           }
+          if (!that.data.isJoin) {
+            that.setJoinRelation()
+          }
         }
         getApp().globalData.refreshSequenceList = true
         wx.showToast({
@@ -545,9 +548,6 @@ Page({
         that.data.currentPage = 0
         that.data.hasNextPage = true
         that.getIdioms()
-        if (sequence.get("type") == "all" && !that.data.isJoin) {
-          that.setJoinRelation()
-        }
         // 发送消息
         mConversation.send(new TextMessage(that.data.inputIdiom))
       } else {
