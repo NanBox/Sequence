@@ -101,6 +101,7 @@ Page({
       that.setData({
         sequence: sequence
       })
+
       if (!that.data.hasCheckRelation) {
         that.checkRelation()
       }
@@ -126,6 +127,7 @@ Page({
     query.equalTo('user', user)
     query.equalTo('sequence', sequence)
     query.first().then(function (userSequenceMap) {
+      that.data.hasCheckRelation = true
       if (userSequenceMap != null) {
         that.data.userSequenceMap = userSequenceMap
         that.data.isJoin = userSequenceMap.get("join")
@@ -137,6 +139,9 @@ Page({
             canInput: true
           })
         }
+        if (sequence.get("type") == "two" && sequence.get("imgList").length < 2) {
+          that.setTwoTypeRelation()
+        }
       } else {
         if (sequence.get("type") == "all") {
           that.setAllTypeRelation()
@@ -146,7 +151,6 @@ Page({
           that.setTwoTypeRelation()
         }
       }
-      that.data.hasCheckRelation = true
     }, function (err) {
       console.log("查找用户、群关系失败", err)
     })
