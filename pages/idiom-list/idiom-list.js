@@ -1,7 +1,6 @@
 const AV = require('../../libs/av-weapp-min')
 const TextMessage = require('../../libs/realtime.weapp.min.js').TextMessage
 const util = require('../../utils/util.js')
-var mClient = null
 var mConversation = null
 
 Page({
@@ -106,7 +105,7 @@ Page({
         that.checkRelation()
       }
       if (mConversation == null) {
-        that.getConversation()
+        that.getClient()
       }
       wx.setNavigationBarTitle({
         title: sequence.get("title"),
@@ -297,39 +296,53 @@ Page({
   },
 
   /**
+   * 连接实时通信
+   */
+  getClient: function () {
+    var client = getApp().globalData.client
+    if (client == null) {
+      var that = this
+      var user = getApp().globalData.user
+      var realtime = getApp().globalData.realtime
+      realtime.createIMClient(user.id).then(function (client) {
+        getApp().globalData.client = client
+        that.getConversation()
+      })
+    } else {
+      this.getConversation()
+    }
+  },
+
+  /**
    * 建立实时通信对话
    */
   getConversation: function () {
     var that = this
-    var user = getApp().globalData.user
-    var realtime = getApp().globalData.realtime
+    var client = getApp().globalData.client
     var sequence = this.data.sequence
-    realtime.createIMClient(user.id).then(function (client) {
-      mClient = client
-      if (sequence.get("conversationId") != null &&
-        sequence.get("conversationId").length > 0) {
-        client.getConversation(sequence.get("conversationId"))
-          .then(function (conversation) {
-            mConversation = conversation
-            mConversation.join()
-            that.receiveMessage()
-          }, function (error) {
-            console.log("查询对话失败", error)
-          })
-      } else {
-        client.createConversation({
-          transient: true,
-        }).then(function (conversation) {
+    if (sequence.get("conversationId") != null &&
+      sequence.get("conversationId").length > 0) {
+      client.getConversation(sequence.get("conversationId"))
+        .then(function (conversation) {
           mConversation = conversation
-          sequence.set("conversationId", conversation.id)
-          sequence.save()
           mConversation.join()
           that.receiveMessage()
         }, function (error) {
-          console.log("创建对话失败", error)
+          console.log("查询对话失败", error)
         })
-      }
-    })
+    } else {
+      client.createConversation({
+        transient: true,
+      }).then(function (conversation) {
+        mConversation = conversation
+        mConversation.join()
+        that.receiveMessage()
+        sequence.set("conversationId", conversation.id)
+        sequence.save()
+      }, function (error) {
+        console.log("创建对话失败", error)
+      })
+    }
   },
 
   /**
@@ -338,7 +351,8 @@ Page({
   receiveMessage: function () {
     var that = this
     var sequence = this.data.sequence
-    mClient.on('message', function (message, conversation) {
+    var client = getApp().globalData.client
+    client.on('message', function (message, conversation) {
       if (sequence.get("type") == "all" ||
         (sequence.get("type") == "two" && sequence.get("imgList").length < 2)) {
         that.getSequence()
@@ -670,14 +684,5 @@ Page({
         })
       }
     })
-  },
-
-  /**
-  * 生命周期函数--监听页面卸载
-  */
-  onUnload: function () {
-    if (mClient != null) {
-      mClient.close()
-    }
   }
 })
