@@ -25,7 +25,9 @@ Page({
     inputValue: "",
     currentPage: 0,
     hasNextPage: true,
-    loadingNextPage: false
+    loadingNextPage: false,
+    hasCheckRelation: false,
+    shouldSaveIdiom: false
   },
 
   /**
@@ -68,7 +70,12 @@ Page({
     })
     var sequence = this.data.sequence
     if (sequence.get("type") == "two" && sequence.get("imgList").length < 2) {
-      this.setTwoTypeRelation()
+      // 重新获取接龙数据，设置关系
+      this.getSequence()
+    } else if (this.data.shouldSaveIdiom) {
+      // 保存成语
+      this.data.shouldSaveIdiom = false
+      this.onSubmit()
     }
   },
 
@@ -80,6 +87,8 @@ Page({
     if (res.detail.userInfo) {
       app.updateUserInfo(res.detail.userInfo, this.updateUserSuccess)
     }
+    // 获取到用户信息后保存成语
+    this.data.shouldSaveIdiom = true
   },
 
   /**
@@ -92,8 +101,12 @@ Page({
       that.setData({
         sequence: sequence
       })
-      that.checkRelation()
-      that.getConversation()
+      if (!that.data.hasCheckRelation) {
+        that.checkRelation()
+      }
+      if (mConversation == null) {
+        that.getConversation()
+      }
       wx.setNavigationBarTitle({
         title: sequence.get("title"),
       })
@@ -133,6 +146,7 @@ Page({
           that.setTwoTypeRelation()
         }
       }
+      that.data.hasCheckRelation = true
     }, function (err) {
       console.log("查找用户、群关系失败", err)
     })
@@ -191,23 +205,35 @@ Page({
    */
   setTwoTypeRelation: function () {
     var sequence = this.data.sequence
-    if (sequence.get("imgList").length < 2 && this.data.hasUserInfo) {
-      var user = getApp().globalData.user
-      var imgList = sequence.get("imgList")
-      if (imgList == null) {
-        imgList = []
-      }
-      console.log(user)
-      imgList.push(user.get("avatarUrl"))
-      sequence.set("imgList", imgList)
-      sequence.save()
-      getApp().globalData.refreshSequenceList = true
+    if (sequence.get("imgList").length < 2) {
       this.setData({
-        isJoin: true,
-        canInput: true,
-        sequence: sequence
+        canInput: true
       })
-      this.setJoinRelation()
+      if (this.data.hasUserInfo) {
+        var user = getApp().globalData.user
+        var imgList = sequence.get("imgList")
+        if (imgList == null) {
+          imgList = []
+        }
+        imgList.push(user.get("avatarUrl"))
+        sequence.set("imgList", imgList)
+        sequence.save()
+        getApp().globalData.refreshSequenceList = true
+        this.setData({
+          isJoin: true,
+          sequence: sequence
+        })
+        this.setJoinRelation()
+        if (this.data.shouldSaveIdiom) {
+          // 保存成语
+          this.data.shouldSaveIdiom = false
+          this.onSubmit()
+        }
+      } else {
+        // 没有用户信息，关系暂时未确定，获取到用户信息后再设置
+        this.data.hasCheckRelation = false
+        this.setFollowRelation()
+      }
     } else {
       this.setFollowRelation()
     }

@@ -68,7 +68,7 @@
       <image class="img img5" src="{{item.imgList[4]}}" mode="aspectFill"/>
     </view>
     </view>
-      <view wx:elif="{{item.type=='group'}}" class="group">
+    <view wx:elif="{{item.type=='group'}}" class="group">
       <block wx:if="{{item.groupId.length>0}}">
         <open-data type="groupName" open-gid="{{item.groupId}}" />
       </block>

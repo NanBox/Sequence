@@ -149,8 +149,7 @@ page {
 .sequence .two .vs {
   flex: 1;
   color: gray;
-  font-size: 36rpx;
-  font-weight: bold;
+  font-size: 30rpx;
   text-align: center;
 }
 

@@ -116,7 +116,6 @@ page {
 
 .tool-bar .two .vs {
   flex: 1;
-  font-weight: bold;
   text-align: center;
 }
 
