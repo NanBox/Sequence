@@ -74,6 +74,7 @@ App({
     hasUserInfo: false,
     shareTicket: "",
     refreshSequenceList: false,
-    realtime: null
+    realtime: null,
+    client: null
   }
 })
