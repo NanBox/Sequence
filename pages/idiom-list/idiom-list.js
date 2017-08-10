@@ -598,6 +598,10 @@ Page({
         that.data.currentPage = 0
         that.data.hasNextPage = true
         that.getIdioms()
+        if (that.data.userSequenceMap != null) {
+          // 更新关系表，用于更新首页排序
+          that.data.userSequenceMap.save()
+        }
         // 发送消息
         mConversation.send(new TextMessage(that.data.inputIdiom))
       } else {
