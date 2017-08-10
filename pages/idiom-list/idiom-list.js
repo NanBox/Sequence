@@ -129,18 +129,18 @@ Page({
       that.data.hasCheckRelation = true
       if (userSequenceMap != null) {
         that.data.userSequenceMap = userSequenceMap
+        // 更新关系表，用于更新首页排序
+        userSequenceMap.save()
         that.data.isJoin = userSequenceMap.get("join")
-        if (!that.data.isJoin && sequence.get("type") == "group") {
-          that.setGroupTypeRelation()
-        }
         if (that.data.isJoin || sequence.get("type") == "all") {
           that.setData({
             canInput: true
           })
-        }
-        if (sequence.get("type") == "two" && sequence.get("imgList").length < 2) {
+        } else if (sequence.get("type") == "group") {
+          that.setGroupTypeRelation()
+        } else if (sequence.get("type") == "two" && sequence.get("imgList").length < 2) {
           that.setTwoTypeRelation()
-        }
+        } 
       } else {
         if (sequence.get("type") == "all") {
           that.setAllTypeRelation()
@@ -286,10 +286,16 @@ Page({
     var that = this
     var user = getApp().globalData.user
     var sequence = this.data.sequence
-    var userSequenceMap = new AV.Object('UserSequenceMap')
-    userSequenceMap.set('user', user)
-    userSequenceMap.set('sequence', sequence)
-    userSequenceMap.set('join', false)
+    if (this.data.userSequenceMap != null) {
+      userSequenceMap = this.data.userSequenceMap
+      userSequenceMap.set("join", true)
+    } else {
+      var user = getApp().globalData.user
+      var userSequenceMap = new AV.Object('UserSequenceMap')
+      userSequenceMap.set('user', user)
+      userSequenceMap.set('sequence', sequence)
+      userSequenceMap.set('join', false)
+    }
     userSequenceMap.save().then(userSequenceMap => {
       that.data.userSequenceMap = userSequenceMap
     })
@@ -598,10 +604,6 @@ Page({
         that.data.currentPage = 0
         that.data.hasNextPage = true
         that.getIdioms()
-        if (that.data.userSequenceMap != null) {
-          // 更新关系表，用于更新首页排序
-          that.data.userSequenceMap.save()
-        }
         // 发送消息
         mConversation.send(new TextMessage(that.data.inputIdiom))
       } else {
