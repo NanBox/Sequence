@@ -10,7 +10,7 @@ AV.init({
 App({
   onLaunch: function (ops) {
     //当情景值为 1044，即通过带 shareTicket 的微信群分享卡片进入小程序
-    if (ops.scene == 1044) {
+    if (ops != null && ops.scene == 1044) {
       this.globalData.shareTicket = ops.shareTicket
     }
     // 初始化 Realtime

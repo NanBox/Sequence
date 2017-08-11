@@ -26,7 +26,9 @@ Page({
     var app = getApp()
     app.login(this.loginSuccess, this.updateUserSuccess)
     // 显示转发按钮
-    wx.showShareMenu()
+    if (wx.showShareMenu) {
+      wx.showShareMenu()
+    }
   },
 
   /**
@@ -102,10 +104,13 @@ Page({
     })
     var pageSize = 10
     var that = this
-    var userId = getApp().globalData.user.id
+    var user = getApp().globalData.user
+    if (user == null) {
+      return
+    }
     var currentJoinPage = this.data.currentJoinPage
     AV.Cloud
-      .run('getJoinSequences', { userId: userId, page: currentJoinPage + 1 })
+      .run('getJoinSequences', { userId: user.id, page: currentJoinPage + 1 })
       .then(joinList => {
         util.hideLoading()
         wx.stopPullDownRefresh()
@@ -151,10 +156,13 @@ Page({
     })
     var pageSize = 10
     var that = this
-    var userId = getApp().globalData.user.id
+    var user = getApp().globalData.user
+    if (user == null) {
+      return
+    }
     var currentFollowPage = this.data.currentFollowPage
     AV.Cloud
-      .run('getFollowSequences', { userId: userId, page: currentFollowPage + 1 })
+      .run('getFollowSequences', { userId: user.id, page: currentFollowPage + 1 })
       .then(followList => {
         util.hideLoading()
         wx.stopPullDownRefresh()

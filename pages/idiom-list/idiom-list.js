@@ -641,7 +641,8 @@ Page({
    */
   onRefresh: function () {
     var sequence = this.data.sequence
-    if (sequence.get("type") == "all" ||
+    if (sequence == null ||
+      sequence.get("type") == "all" ||
       (sequence.get("type") == "two" && sequence.get("imgList").length < 2)) {
       this.getSequence()
     }
