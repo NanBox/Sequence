@@ -21,7 +21,7 @@
     </view>
     <view class="checkbox" bindtap="selectType" id="two">
       <image class="img" src="{{sequenceType=='two'?'/images/check.png':'/images/uncheck.png'}}" mode="aspectFit" />
-      <view class="explain {{sequenceType=='two'?'check':'uncheck'}}">和指定好友1vs1</view>
+      <view class="explain {{sequenceType=='two'?'check':'uncheck'}}">和指定好友1v1</view>
     </view>
   </view>
 </view>

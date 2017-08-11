@@ -140,7 +140,7 @@ Page({
           that.setGroupTypeRelation()
         } else if (sequence.get("type") == "two" && sequence.get("imgList").length < 2) {
           that.setTwoTypeRelation()
-        } 
+        }
       } else {
         if (sequence.get("type") == "all") {
           that.setAllTypeRelation()
@@ -674,6 +674,7 @@ Page({
       sequence.get("groupId").length > 0) {
       return
     }
+    var that = this
     var user = getApp().globalData.user
     wx.getShareInfo({
       shareTicket: shareTicket,
@@ -687,6 +688,9 @@ Page({
           //保存群id
           sequence.set("groupId", data.openGId)
           sequence.save()
+          that.setData({
+            sequence: sequence
+          })
         })
       }
     })
