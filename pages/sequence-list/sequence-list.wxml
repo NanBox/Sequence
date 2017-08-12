@@ -35,6 +35,8 @@
   <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
 </button>
 
+<image class="bottom-shadow" src="/images/bottom_shadow.png" mode="aspectFill" />
+
 <template name="sequence-list">
   <view wx:for="{{sequenceList}}" wx:key="{{index}}" class="sequence" bindtap="navigateToIdiomList" id="{{index}}">
     <view class="text">

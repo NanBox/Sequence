@@ -363,6 +363,7 @@ Page({
         (sequence.get("type") == "two" && sequence.get("imgList").length < 2)) {
         that.getSequence()
       }
+      getApp().globalData.refreshSequenceList = true
       that.getIdioms()
     })
   },
