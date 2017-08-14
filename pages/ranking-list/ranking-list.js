@@ -37,6 +37,9 @@ Page({
     })
   },
 
+  /**
+   * 获取接龙总排行榜
+   */
   getAllSequenceList: function () {
     util.showLoading()
     var that = this
@@ -45,6 +48,7 @@ Page({
     query.limit(10)
     query.find().then(function (sequenceList) {
       util.hideLoading()
+      wx.stopPullDownRefresh()
       if (sequenceList.length > 0) {
         that.setData({
           getSequenceComplete: true,
@@ -53,10 +57,14 @@ Page({
       }
     }, err => {
       util.hideLoading()
+      wx.stopPullDownRefresh()
       console.log("获取接龙总榜失败", err)
     })
   },
 
+  /**
+   * 获取用户总排行榜
+   */
   getAllUserList: function () {
     util.showLoading()
     var that = this
@@ -66,6 +74,7 @@ Page({
     query.limit(10)
     query.find().then(function (userList) {
       util.hideLoading()
+      wx.stopPullDownRefresh()
       if (userList.length > 0) {
         that.setData({
           getUserComplete: true,
@@ -74,7 +83,19 @@ Page({
       }
     }, err => {
       util.hideLoading()
+      wx.stopPullDownRefresh()
       console.log("获取用户总榜失败", err)
     })
   },
+
+  /**
+   * 下拉刷新
+   */
+  onPullDownRefresh: function () {
+    if (this.data.selectSequence) {
+      this.getAllSequenceList()
+    } else {
+      this.getAllUserList()
+    }
+  }
 })
