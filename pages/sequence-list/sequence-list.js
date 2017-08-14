@@ -25,11 +25,20 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function () {
-    var app = getApp()
-    app.login(this.loginSuccess, this.updateUserSuccess)
-    // 显示转发按钮
-    if (wx.showShareMenu) {
-      wx.showShareMenu()
+    var date = new Date()
+    if (date.getHours() < 7 ||
+      (date.getHours() == 7 && date.getMinutes() < 30)) {
+      // 01:00 - 07:30 后台处于休眠
+      wx.redirectTo({
+        url: '/pages/sleep/sleep'
+      })
+    } else {
+      var app = getApp()
+      app.login(this.loginSuccess, this.updateUserSuccess)
+      // 显示转发按钮
+      if (wx.showShareMenu) {
+        wx.showShareMenu()
+      }
     }
   },
 

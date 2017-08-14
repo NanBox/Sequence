@@ -33,30 +33,31 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    // if (date.getHours() < 6 ||
-    //   (date.getHours() == 6 && date.getMinutes() < 30)) {
-    //   // 00:00 - 06:30 后台处于休眠
-    //   wx.redirectTo({
-    //     url: '/pages/sleep/sleep'
-    //   })
-    // } else {
-    this.data.id = options.id
-    var app = getApp()
-    if (!app.globalData.hasLogin) {
-      app.login(this.loginSuccess, this.updateUserSuccess)
-    } else {
-      this.setData({
-        hasUserInfo: app.globalData.hasUserInfo
+    var date = new Date()
+    if (date.getHours() < 7 ||
+      (date.getHours() == 7 && date.getMinutes() < 30)) {
+      // 01:00 - 07:30 后台处于休眠
+      wx.redirectTo({
+        url: '/pages/sleep/sleep'
       })
-      util.showLoading()
-      this.getSequence()
-      this.getIdioms()
+    } else {
+      this.data.id = options.id
+      var app = getApp()
+      if (!app.globalData.hasLogin) {
+        app.login(this.loginSuccess, this.updateUserSuccess)
+      } else {
+        this.setData({
+          hasUserInfo: app.globalData.hasUserInfo
+        })
+        util.showLoading()
+        this.getSequence()
+        this.getIdioms()
+      }
+      //转发可获取转发目标信息
+      wx.showShareMenu({
+        withShareTicket: true
+      })
     }
-    //转发可获取转发目标信息
-    wx.showShareMenu({
-      withShareTicket: true
-    })
-    // }
   },
 
   /**
