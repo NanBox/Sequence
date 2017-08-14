@@ -33,6 +33,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    // if (date.getHours() < 6 ||
+    //   (date.getHours() == 6 && date.getMinutes() < 30)) {
+    //   // 00:00 - 06:30 后台处于休眠
+    //   wx.redirectTo({
+    //     url: '/pages/sleep/sleep'
+    //   })
+    // } else {
     this.data.id = options.id
     var app = getApp()
     if (!app.globalData.hasLogin) {
@@ -49,6 +56,7 @@ Page({
     wx.showShareMenu({
       withShareTicket: true
     })
+    // }
   },
 
   /**

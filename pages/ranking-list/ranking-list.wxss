@@ -39,6 +39,7 @@ page {
 .ranking .img {
   width: 72rpx;
   height: 72rpx;
+  border-radius: 100%;
   margin-left: 20rpx;
 }
 
