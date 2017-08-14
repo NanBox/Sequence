@@ -16,7 +16,9 @@ Page({
     loadingNextJoinPage: false,
     currentFollowPage: 0,
     hasNextFollowPage: true,
-    loadingNextFollowPage: false
+    loadingNextFollowPage: false,
+    showCreateBtn: true,
+    hideBtnTime: 0
   },
 
   /**
@@ -66,7 +68,7 @@ Page({
   },
 
   /**
-   * 首次接龙首页
+   * 接龙首页
    */
   getSequencesFirstPage: function () {
     util.showLoading()
@@ -82,7 +84,7 @@ Page({
   },
 
   /**
-   * 首次接龙下一页
+   * 接龙下一页
    */
   getSequencesNextPage: function () {
     if (this.data.selectJoin) {
@@ -257,8 +259,31 @@ Page({
   /**
    * 上拉加载
    */
-  onReachBottom: function () {
+  onReachBottom: function (event) {
     this.getSequencesNextPage()
+    // 隐藏创建按钮，避免遮挡
+    this.setData({
+      showCreateBtn: false
+    })
+    var date = new Date()
+    this.data.hideBtnTime = date.getTime()
+  },
+
+  /**
+   * 页面滚动
+   */
+  onPageScroll: function (event) {
+    if (this.data.showCreateBtn == false) {
+      var date = new Date()
+      var time = date.getTime()
+      if (time - this.data.hideBtnTime < 300) {
+        return
+      }
+      // 显示创建按钮
+      this.setData({
+        showCreateBtn: true
+      })
+    }
   }
 
 })
