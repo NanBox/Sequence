@@ -75,3 +75,12 @@
   height: 50rpx;
   width: 50rpx;
 }
+
+/* 底部阴影 */
+
+.bottom-shadow {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 20rpx;
+}

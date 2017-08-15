@@ -42,3 +42,5 @@
     <template is="empty-page" data="{{text:'还没有上榜的用户'}}" />
   </block>
 </block>
+
+<image class="bottom-shadow" src="/images/bottom_shadow.png" mode="aspectFill" />
