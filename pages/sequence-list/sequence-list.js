@@ -285,7 +285,7 @@ Page({
     if (this.data.showCreateBtn == false) {
       var date = new Date()
       var time = date.getTime()
-      if (time - this.data.hideBtnTime < 300) {
+      if (time - this.data.hideBtnTime < 350) {
         return
       }
       // 显示创建按钮

@@ -54,28 +54,6 @@
   margin-top: 25rpx;
 }
 
-/* 创建按钮 */
-
-.create-button {
-  width: 116rpx;
-  height: 116rpx;
-  border-radius: 100%;
-  background-color: #ea4c89;
-  position: fixed;
-  bottom: 0;
-  margin: 30rpx;
-  border: 8rpx solid #f5c5d7;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.create-button .img {
-  height: 50rpx;
-  width: 50rpx;
-}
-
 /* 底部阴影 */
 
 .bottom-shadow {

@@ -28,14 +28,14 @@
   </block>
 </block>
 
-<block wx:if="{{showCreateBtn}}">
-  <button wx:if="{{hasUserInfo}}" class="create-button" bindtap="navigateToCreate">
+<view class="create-button {{showCreateBtn?'show-button':'hide-button'}}">
+  <button wx:if="{{hasUserInfo}}" class="button" bindtap="navigateToCreate">
     <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
   </button>
-  <button wx:else class="create-button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
+  <button wx:else class="button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
     <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
   </button>
-</block>
+</view>
 
 <image class="bottom-shadow" src="/images/bottom_shadow.png" mode="aspectFill" />
 
