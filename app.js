@@ -47,7 +47,10 @@ App({
       typeof loginSuccess == "function" && loginSuccess()
     }, err => {
       util.hideLoading()
-      console.log("登录失败", error)
+      console.log("登录失败", err)
+      if (err.code == 140) {
+        console.log("API 调用总次数已超过限制")
+      }
     })
   },
 
