@@ -49,7 +49,9 @@ App({
       util.hideLoading()
       console.log("登录失败", err)
       if (err.code == 140) {
-        console.log("API 调用总次数已超过限制")
+        wx.redirectTo({
+          url: '/pages/over/over'
+        })
       }
     })
   },

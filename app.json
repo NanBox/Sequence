@@ -4,7 +4,8 @@
     "pages/ranking-list/ranking-list",
     "pages/idiom-list/idiom-list",
     "pages/create-sequence/create-sequence",
-    "pages/sleep/sleep"
+    "pages/sleep/sleep",
+    "pages/over/over"
   ],
   "window": {
     "backgroundTextStyle": "light",
