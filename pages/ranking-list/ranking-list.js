@@ -7,19 +7,28 @@ Page({
    * 页面的初始数据
    */
   data: {
-    sequenceList: [],
-    userList: [],
-    isToday: true,
+    selectToday: true,
     selectSequence: true,
-    getSequenceComplete: false,
-    getUserComplete: false
+    todaySequenceList: [],
+    todayUserList: [],
+    allSequenceList: [],
+    allUserList: [],
+    getTodaySequenceComplete: false,
+    getTodayUserComplete: false,
+    getAllSequenceComplete: false,
+    getAllUserComplete: false,
+    showSwitchBtn: true,
+    hideBtnTime: 0
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.getAllSequenceList()
+    this.getTodaySequenceList()
+    wx.setNavigationBarTitle({
+      title: '今日排行榜',
+    })
   },
 
   /**
@@ -27,13 +36,109 @@ Page({
    */
   switchTab: function (event) {
     var selectSequence = event.currentTarget.id == "sequence"
-    if (selectSequence && !this.data.getSequenceComplete) {
-      this.getAllSequenceList()
-    } else if (!selectSequence && !this.data.getUserComplete) {
-      this.getAllUserList()
+    if (this.data.selectToday) {
+      if (selectSequence && !this.data.getTodaySequenceComplete) {
+        this.getTodaySequenceList()
+      } else if (!selectSequence && !this.data.getTodayUserComplete) {
+        this.getTodayUserList()
+      }
+    } else {
+      if (selectSequence && !this.data.getAllSequenceComplete) {
+        this.getAllSequenceList()
+      } else if (!selectSequence && !this.data.getAllUserComplete) {
+        this.getAllUserList()
+      }
     }
     this.setData({
       selectSequence: selectSequence
+    })
+  },
+
+  /**
+    * 切换今、总排行榜
+    */
+  switchToday: function () {
+    var selectToday = !this.data.selectToday
+    var selectSequence = this.data.selectSequence
+    if (selectToday) {
+      if (selectSequence && !this.data.getTodaySequenceComplete) {
+        this.getTodaySequenceList()
+      } else if (!selectSequence && !this.data.getTodayUserComplete) {
+        this.getTodayUserList()
+      }
+      wx.setNavigationBarTitle({
+        title: '今日排行榜',
+      })
+    } else {
+      if (selectSequence && !this.data.getAllSequenceComplete) {
+        this.getAllSequenceList()
+      } else if (!selectSequence && !this.data.getAllUserComplete) {
+        this.getAllUserList()
+      }
+      wx.setNavigationBarTitle({
+        title: '总排行榜',
+      })
+    }
+    this.setData({
+      selectToday: selectToday
+    })
+  },
+
+  /**
+   * 获取接龙今日排行榜
+   */
+  getTodaySequenceList: function () {
+    util.showLoading()
+    var that = this
+    var date = new Date()
+    var today = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+    var query = new AV.Query('Sequence')
+    query.greaterThanOrEqualTo("todayCount", 0)
+    query.equalTo("today", today)
+    query.descending('todayCount')
+    query.limit(10)
+    query.find().then(function (sequenceList) {
+      util.hideLoading()
+      wx.stopPullDownRefresh()
+      if (sequenceList.length > 0) {
+        that.setData({
+          getTodaySequenceComplete: true,
+          todaySequenceList: sequenceList
+        })
+      }
+    }, err => {
+      util.hideLoading()
+      wx.stopPullDownRefresh()
+      console.log("获取今日接龙总榜失败", err)
+    })
+  },
+
+  /**
+   * 获取今日排行榜
+   */
+  getTodayUserList: function () {
+    util.showLoading()
+    var that = this
+    var date = new Date()
+    var today = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+    var query = new AV.Query('User')
+    query.greaterThanOrEqualTo("todayCount", 0)
+    query.equalTo("today", today)
+    query.descending('todayCount')
+    query.limit(10)
+    query.find().then(function (userList) {
+      util.hideLoading()
+      wx.stopPullDownRefresh()
+      if (userList.length > 0) {
+        that.setData({
+          getTodayUserComplete: true,
+          todayUserList: userList
+        })
+      }
+    }, err => {
+      util.hideLoading()
+      wx.stopPullDownRefresh()
+      console.log("获取用户总榜失败", err)
     })
   },
 
@@ -44,6 +149,7 @@ Page({
     util.showLoading()
     var that = this
     var query = new AV.Query('Sequence')
+    query.greaterThanOrEqualTo("idiomCount", 0)
     query.descending('idiomCount')
     query.limit(10)
     query.find().then(function (sequenceList) {
@@ -51,8 +157,8 @@ Page({
       wx.stopPullDownRefresh()
       if (sequenceList.length > 0) {
         that.setData({
-          getSequenceComplete: true,
-          sequenceList: sequenceList
+          getAllSequenceComplete: true,
+          allSequenceList: sequenceList
         })
       }
     }, err => {
@@ -77,8 +183,8 @@ Page({
       wx.stopPullDownRefresh()
       if (userList.length > 0) {
         that.setData({
-          getUserComplete: true,
-          userList: userList
+          getAllUserComplete: true,
+          allUserList: userList
         })
       }
     }, err => {
@@ -92,10 +198,48 @@ Page({
    * 下拉刷新
    */
   onPullDownRefresh: function () {
-    if (this.data.selectSequence) {
-      this.getAllSequenceList()
+    var selectSequence = this.data.selectSequence
+    if (this.data.selectToday) {
+      if (selectSequence) {
+        this.getTodaySequenceList()
+      } else if (!selectSequence) {
+        this.getTodayUserList()
+      }
     } else {
-      this.getAllUserList()
+      if (selectSequence) {
+        this.getAllSequenceList()
+      } else if (!selectSequence) {
+        this.getAllUserList()
+      }
+    }
+  },
+
+  /**
+   * 页面触底
+   */
+  onReachBottom: function (event) {
+    // 隐藏切换按钮，避免遮挡
+    this.setData({
+      showSwitchBtn: false
+    })
+    var date = new Date()
+    this.data.hideBtnTime = date.getTime()
+  },
+
+  /**
+   * 页面滚动
+   */
+  onPageScroll: function (event) {
+    if (this.data.showSwitchBtn == false) {
+      var date = new Date()
+      var time = date.getTime()
+      if (time - this.data.hideBtnTime < 350) {
+        return
+      }
+      // 显示切换按钮
+      this.setData({
+        showSwitchBtn: true
+      })
     }
   }
 })
