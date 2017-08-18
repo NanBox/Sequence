@@ -18,7 +18,8 @@ Page({
     hasNextFollowPage: true,
     loadingNextFollowPage: false,
     showCreateBtn: true,
-    hideBtnTime: 0
+    hideBtnTime: 0,
+    canScrall: false
   },
 
   /**
@@ -220,6 +221,7 @@ Page({
     this.setData({
       selectJoin: selectJoin
     })
+    this.data.canScroll = false
   },
 
   /**
@@ -269,6 +271,9 @@ Page({
    * 上拉加载
    */
   onReachBottom: function (event) {
+    if (!this.data.canScroll) {
+      return
+    }
     this.getSequencesNextPage()
     // 隐藏创建按钮，避免遮挡
     this.setData({
@@ -282,6 +287,7 @@ Page({
    * 页面滚动
    */
   onPageScroll: function (event) {
+    this.data.canScroll = true
     if (this.data.showCreateBtn == false) {
       var date = new Date()
       var time = date.getTime()

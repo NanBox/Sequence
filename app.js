@@ -60,7 +60,6 @@ App({
     * 更新用户信息
     */
   updateUserInfo: function (userInfo, updateUserSuccess) {
-    util.showLoading()
     var that = this
     var user = AV.User.current()
     user.set(userInfo).save().then(user => {

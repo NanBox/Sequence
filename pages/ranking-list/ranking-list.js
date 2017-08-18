@@ -18,7 +18,8 @@ Page({
     getAllSequenceComplete: false,
     getAllUserComplete: false,
     showSwitchBtn: true,
-    hideBtnTime: 0
+    hideBtnTime: 0,
+    canScroll: false
   },
 
   /**
@@ -52,6 +53,7 @@ Page({
     this.setData({
       selectSequence: selectSequence
     })
+    this.data.canScroll = false
   },
 
   /**
@@ -82,6 +84,7 @@ Page({
     this.setData({
       selectToday: selectToday
     })
+    this.data.canScroll = false
   },
 
   /**
@@ -100,12 +103,10 @@ Page({
     query.find().then(function (sequenceList) {
       util.hideLoading()
       wx.stopPullDownRefresh()
-      if (sequenceList.length > 0) {
-        that.setData({
-          getTodaySequenceComplete: true,
-          todaySequenceList: sequenceList
-        })
-      }
+      that.setData({
+        getTodaySequenceComplete: true,
+        todaySequenceList: sequenceList
+      })
     }, err => {
       util.hideLoading()
       wx.stopPullDownRefresh()
@@ -129,12 +130,10 @@ Page({
     query.find().then(function (userList) {
       util.hideLoading()
       wx.stopPullDownRefresh()
-      if (userList.length > 0) {
-        that.setData({
-          getTodayUserComplete: true,
-          todayUserList: userList
-        })
-      }
+      that.setData({
+        getTodayUserComplete: true,
+        todayUserList: userList
+      })
     }, err => {
       util.hideLoading()
       wx.stopPullDownRefresh()
@@ -155,12 +154,10 @@ Page({
     query.find().then(function (sequenceList) {
       util.hideLoading()
       wx.stopPullDownRefresh()
-      if (sequenceList.length > 0) {
-        that.setData({
-          getAllSequenceComplete: true,
-          allSequenceList: sequenceList
-        })
-      }
+      that.setData({
+        getAllSequenceComplete: true,
+        allSequenceList: sequenceList
+      })
     }, err => {
       util.hideLoading()
       wx.stopPullDownRefresh()
@@ -181,12 +178,10 @@ Page({
     query.find().then(function (userList) {
       util.hideLoading()
       wx.stopPullDownRefresh()
-      if (userList.length > 0) {
-        that.setData({
-          getAllUserComplete: true,
-          allUserList: userList
-        })
-      }
+      that.setData({
+        getAllUserComplete: true,
+        allUserList: userList
+      })
     }, err => {
       util.hideLoading()
       wx.stopPullDownRefresh()
@@ -218,6 +213,9 @@ Page({
    * 页面触底
    */
   onReachBottom: function (event) {
+    if (!this.data.canScroll) {
+      return
+    }
     // 隐藏切换按钮，避免遮挡
     this.setData({
       showSwitchBtn: false
@@ -230,6 +228,7 @@ Page({
    * 页面滚动
    */
   onPageScroll: function (event) {
+    this.data.canScroll = true
     if (this.data.showSwitchBtn == false) {
       var date = new Date()
       var time = date.getTime()

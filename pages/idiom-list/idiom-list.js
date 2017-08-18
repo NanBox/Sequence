@@ -93,6 +93,7 @@ Page({
   getUserInfo: function (res) {
     var app = getApp()
     if (res.detail.userInfo) {
+      util.showLoading()
       app.updateUserInfo(res.detail.userInfo, this.updateUserSuccess)
     }
     // 获取到用户信息后保存成语

@@ -7,18 +7,18 @@
 
 <block wx:if="{{selectToday}}">
   <block wx:if="{{selectSequence}}">
-    <template is="sequence-ranking-list" data="{{sequenceList:todaySequenceList,selectToday}}" />
+    <template is="sequence-ranking-list" data="{{sequenceList:todaySequenceList,getSequenceComplete:getTodaySequenceComplete,selectToday}}" />
   </block>
   <block wx:else>
-    <template is="user-ranking-list" data="{{userList:todayUserList,selectToday}}" />
+    <template is="user-ranking-list" data="{{userList:todayUserList,getUserComplete:getTodayUserComplete,selectToday}}" />
   </block>
 </block>
 <block wx:else>
   <block wx:if="{{selectSequence}}">
-    <template is="sequence-ranking-list" data="{{sequenceList:allSequenceList,selectToday}}" />
+    <template is="sequence-ranking-list" data="{{sequenceList:allSequenceList,getSequenceComplete:getAllSequenceComplete,selectToday}}" />
   </block>
   <block wx:else>
-    <template is="user-ranking-list" data="{{userList:allUserList,selectToday}}" />
+    <template is="user-ranking-list" data="{{userList:allUserList,getUserComplete:getAllUserComplete,selectToday}}" />
   </block>
 </block>
 
