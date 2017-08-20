@@ -252,10 +252,10 @@ Page({
   /**
    * 获取用户信息
    */
-  getUserInfo: function (res) {
+  getUserInfo: function (e) {
     var app = getApp()
-    if (res.detail.userInfo) {
-      app.updateUserInfo(res.detail.userInfo, this.updateUserSuccess)
+    if (e.detail.userInfo) {
+      app.updateUserInfo(e.detail.userInfo, this.updateUserSuccess)
       this.navigateToCreate()
     }
   },
