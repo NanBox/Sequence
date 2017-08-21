@@ -34,14 +34,15 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    var that = this
     var date = new Date()
-    if (date.getHours() < 7 ||
-      (date.getHours() == 7 && date.getMinutes() < 30)) {
-      // 01:00 - 07:30 后台处于休眠
-      wx.redirectTo({
-        url: '/pages/sleep/sleep'
-      })
-    } else {
+    // if (date.getHours() < 7 ||
+    //   (date.getHours() == 7 && date.getMinutes() < 30)) {
+    //   // 01:00 - 07:30 后台处于休眠
+    //   wx.redirectTo({
+    //     url: '/pages/sleep/sleep'
+    //   })
+    // } else {
       this.data.id = options.id
       var app = getApp()
       if (!app.globalData.hasLogin) {
@@ -71,7 +72,7 @@ Page({
           }
         }
       })
-    }
+    // }
   },
 
   /**
@@ -439,6 +440,8 @@ Page({
         that.getSequence()
       }
       getApp().globalData.refreshSequenceList = true
+      that.data.currentPage = 0
+      that.data.hasNextPage = true
       that.getIdioms()
     })
   },
@@ -681,18 +684,18 @@ Page({
           inputValue: ""
         })
         // 更新列表
-        var myIdiom = {
-          value: params.idiomValue,
-          creator: params.creator,
-          idiomNum: idiomList.length + 1
-        }
-        idiomList.push(myIdiom)
-        that.setData({
-          idiomList: idiomList
-        })
-        // that.data.currentPage = 0
-        // that.data.hasNextPage = true
-        // that.getIdioms()
+        // var myIdiom = {
+        //   value: params.idiomValue,
+        //   creator: params.creator,
+        //   idiomNum: idiomList.length + 1
+        // }
+        // idiomList.push(myIdiom)
+        // that.setData({
+        //   idiomList: idiomList
+        // })
+        that.data.currentPage = 0
+        that.data.hasNextPage = true
+        that.getIdioms()
         // 发送消息
         mConversation.send(new TextMessage(that.data.inputIdiom))
       } else {
