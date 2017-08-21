@@ -623,6 +623,8 @@ Page({
           content: res,
         })
         if (res == "列表有更新") {
+          that.data.currentPage = 0
+          that.data.hasNextPage = true
           that.getIdioms()
         }
       }

@@ -95,7 +95,7 @@
 </scroll-view>
 
 <view wx:if="{{canInput}}" class="input-bar">
-  <input class="input" placeholder-class="placeholder" bindinput="onInput" placeholder="请输入四字成语" value="{{inputValue}}" />
+  <input class="input" placeholder-class="placeholder" bindinput="onInput" placeholder="请输入四字成语" value="{{inputValue}}" cursor-spacing="10"/>
   <button wx:if="{{hasUserInfo}}" class="send-button" bindtap="onSubmit">
       <image class="send" src="{{canSend?'/images/icon_send_2.png':'/images/icon_send_1.png'}}" mode="aspectFit"  />
   </button>
