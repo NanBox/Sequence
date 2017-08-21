@@ -126,8 +126,8 @@ Page({
     var app = getApp()
     wx.getUserInfo({
       success: function (res) {
-        app.updateUserInfo(res.userInfo, this.updateUserSuccess)
-        this.data.shouldSaveIdiom = true
+        app.updateUserInfo(res.userInfo, that.updateUserSuccess)
+        that.data.shouldSaveIdiom = true
       },
       fail: function (res) {
         if (wx.openSetting) {
@@ -135,8 +135,8 @@ Page({
             success: function (res) {
               wx.getUserInfo({
                 success: function (res) {
-                  app.updateUserInfo(res.userInfo, this.updateUserSuccess)
-                  this.data.shouldSaveIdiom = true
+                  app.updateUserInfo(res.userInfo, that.updateUserSuccess)
+                  that.data.shouldSaveIdiom = true
                 },
                 fail: function (res) {
                   wx.showModal({

@@ -281,7 +281,7 @@ Page({
     var app = getApp()
     wx.getUserInfo({
       success: function (res) {
-        app.updateUserInfo(res.userInfo, this.updateUserSuccess)
+        app.updateUserInfo(res.userInfo, that.updateUserSuccess)
         that.navigateToCreate()
       },
       fail: function (res) {
@@ -290,7 +290,7 @@ Page({
             success: function (res) {
               wx.getUserInfo({
                 success: function (res) {
-                  app.updateUserInfo(res.userInfo, this.updateUserSuccess)
+                  app.updateUserInfo(res.userInfo, that.updateUserSuccess)
                   that.navigateToCreate()
                 },
                 fail: function (res) {
