@@ -32,7 +32,10 @@
   <button wx:if="{{hasUserInfo}}" class="button" bindtap="navigateToCreate">
     <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
   </button>
-  <button wx:else class="button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
+  <button wx:elif="{{canGetUserInfo}}" class="button" open-type="getUserInfo" bindgetuserinfo="getUserInfo">
+    <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
+  </button>
+  <button wx:else class="button" open-type="getUserInfo" bindtap="openSetting">
     <image class="img" src="/images/icon_add.png" mode="aspectFit"/>
   </button>
 </view>

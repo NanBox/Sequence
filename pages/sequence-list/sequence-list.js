@@ -19,13 +19,15 @@ Page({
     loadingNextFollowPage: false,
     showCreateBtn: true,
     hideBtnTime: 0,
-    canScrall: false
+    canScroll: false,
+    canGetUserInfo: false,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function () {
+    var that = this
     var date = new Date()
     if (date.getHours() < 7 ||
       (date.getHours() == 7 && date.getMinutes() < 30)) {
@@ -40,6 +42,17 @@ Page({
       if (wx.showShareMenu) {
         wx.showShareMenu()
       }
+      //检查客户端基础库 
+      wx.getSystemInfo({
+        success: function (res) {
+          // 从基础库1.3.0开始，才能使用 getUserInfo 的 button
+          if (parseFloat(res.SDKVersion.substring(0, 4)) >= 1.3) {
+            that.setData({
+              canGetUserInfo: true
+            })
+          }
+        }
+      })
     }
   },
 
@@ -261,6 +274,45 @@ Page({
   },
 
   /**
+   * 跳转设置页面，获取用户信息
+   */
+  openSetting: function () {
+    var that = this
+    var app = getApp()
+    wx.getUserInfo({
+      success: function (res) {
+        app.updateUserInfo(res.userInfo, this.updateUserSuccess)
+        that.navigateToCreate()
+      },
+      fail: function (res) {
+        if (wx.openSetting) {
+          wx.openSetting({
+            success: function (res) {
+              wx.getUserInfo({
+                success: function (res) {
+                  app.updateUserInfo(res.userInfo, this.updateUserSuccess)
+                  that.navigateToCreate()
+                },
+                fail: function (res) {
+                  wx.showModal({
+                    showCancel: false,
+                    content: "需要您的授权才可创建接龙"
+                  })
+                }
+              })
+            }
+          })
+        } else {
+          wx.showModal({
+            showCancel: false,
+            content: "您的微信版本过低，请升级到最新版微信后创建接龙"
+          })
+        }
+      }
+    })
+  },
+
+  /**
    * 下拉刷新
    */
   onPullDownRefresh: function () {
@@ -271,10 +323,10 @@ Page({
    * 上拉加载
    */
   onReachBottom: function (event) {
+    this.getSequencesNextPage()
     if (!this.data.canScroll) {
       return
     }
-    this.getSequencesNextPage()
     // 隐藏创建按钮，避免遮挡
     this.setData({
       showCreateBtn: false

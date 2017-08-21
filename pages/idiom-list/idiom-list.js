@@ -26,7 +26,8 @@ Page({
     hasNextPage: true,
     loadingNextPage: false,
     hasCheckRelation: false,
-    shouldSaveIdiom: false
+    shouldSaveIdiom: false,
+    canGetUserInfo: false
   },
 
   /**
@@ -53,9 +54,22 @@ Page({
         this.getSequence()
         this.getIdioms()
       }
-      //转发可获取转发目标信息
-      wx.showShareMenu({
-        withShareTicket: true
+      // 转发可获取转发目标信息
+      if (wx.showShareMenu) {
+        wx.showShareMenu({
+          withShareTicket: true
+        })
+      }
+      //检查客户端基础库 
+      wx.getSystemInfo({
+        success: function (res) {
+          // 从基础库1.3.0开始，才能使用 getUserInfo 的 button
+          if (parseFloat(res.SDKVersion.substring(0, 4)) >= 1.3) {
+            that.setData({
+              canGetUserInfo: true
+            })
+          }
+        }
       })
     }
   },
@@ -77,6 +91,9 @@ Page({
       hasUserInfo: true
     })
     var sequence = this.data.sequence
+    if (sequence == null) {
+      return
+    }
     if (sequence.get("type") == "two" && sequence.get("imgList").length < 2) {
       // 重新获取接龙数据，设置关系
       this.getSequence()
@@ -98,6 +115,45 @@ Page({
     }
     // 获取到用户信息后保存成语
     this.data.shouldSaveIdiom = true
+  },
+
+  /**
+   * 跳转设置页面，获取用户信息
+   */
+  openSetting: function () {
+    var that = this
+    var app = getApp()
+    wx.getUserInfo({
+      success: function (res) {
+        app.updateUserInfo(res.userInfo, this.updateUserSuccess)
+        this.data.shouldSaveIdiom = true
+      },
+      fail: function (res) {
+        if (wx.openSetting) {
+          wx.openSetting({
+            success: function (res) {
+              wx.getUserInfo({
+                success: function (res) {
+                  app.updateUserInfo(res.userInfo, this.updateUserSuccess)
+                  this.data.shouldSaveIdiom = true
+                },
+                fail: function (res) {
+                  wx.showModal({
+                    showCancel: false,
+                    content: "需要您的授权才可接龙"
+                  })
+                }
+              })
+            }
+          })
+        } else {
+          wx.showModal({
+            showCancel: false,
+            content: "您的微信版本过低，请升级到最新版微信后创建接龙"
+          })
+        }
+      }
+    })
   },
 
   /**
@@ -184,6 +240,12 @@ Page({
     if (shareTicket != null) {
       var user = getApp().globalData.user
       var sequence = this.data.sequence
+      if (!wx.getShareInfo) {
+        wx.showModal({
+          showCancel: false,
+          content: "您的微信版本过低，请升级到最新版微信后参与",
+        })
+      }
       wx.getShareInfo({
         shareTicket: shareTicket,
         success(res) {
@@ -319,6 +381,9 @@ Page({
     if (client == null) {
       var that = this
       var user = getApp().globalData.user
+      if (user == null) {
+        return
+      }
       var realtime = getApp().globalData.realtime
       realtime.createIMClient(user.id).then(function (client) {
         getApp().globalData.client = client
@@ -388,6 +453,10 @@ Page({
     var pageSize = 10
     var that = this
     var user = getApp().globalData.user
+    if (user == null) {
+      util.hideLoading()
+      return
+    }
     var currentPage = this.data.currentPage
     var params = {
       userId: user.id,
@@ -674,7 +743,9 @@ Page({
       title: "一起来玩成语接龙！",
       path: 'pages/idiom-list/idiom-list?id=' + this.data.id,
       success(res) {
-        that.getShareInfo(res.shareTickets[0])
+        if (res.shareTickets.length > 0) {
+          that.getShareInfo(res.shareTickets[0])
+        }
       }
     }
   },
