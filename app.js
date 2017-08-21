@@ -61,7 +61,12 @@ App({
     */
   updateUserInfo: function (userInfo, updateUserSuccess) {
     var that = this
-    var user = AV.User.current()
+    var user = this.globalData.user
+    if (user.get("nickName") != null && user.get("avatarUrl") != null &&
+      user.get("nickName") == userInfo.nickName && user.get("avatarUrl") == userInfo.avatarUrl) {
+      typeof updateUserSuccess == "function" && updateUserSuccess()
+      return
+    }
     user.set(userInfo).save().then(user => {
       util.hideLoading()
       that.globalData.user = AV.User.current()

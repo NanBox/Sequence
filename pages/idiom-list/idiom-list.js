@@ -680,10 +680,19 @@ Page({
           canSend: false,
           inputValue: ""
         })
-        // 刷新列表
-        that.data.currentPage = 0
-        that.data.hasNextPage = true
-        that.getIdioms()
+        // 更新列表
+        var myIdiom = {
+          value: params.idiomValue,
+          creator: params.creator,
+          idiomNum: idiomList.length + 1
+        }
+        idiomList.push(myIdiom)
+        that.setData({
+          idiomList: idiomList
+        })
+        // that.data.currentPage = 0
+        // that.data.hasNextPage = true
+        // that.getIdioms()
         // 发送消息
         mConversation.send(new TextMessage(that.data.inputIdiom))
       } else {
