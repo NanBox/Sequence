@@ -651,8 +651,9 @@ Page({
     }
     AV.Cloud.run('saveIdiom', params).then(res => {
       util.hideLoading()
-      if (res == "OK") {
+      if (typeof res == "object") {
         // 成功保存记录
+        var idiom = res
         if (sequence.get("type") == "all") {
           // 修改最近的五个接龙用户头像
           var imgList = sequence.get("imgList")
@@ -679,14 +680,7 @@ Page({
         })
         that.data.InputIdiom = ""
         // 更新列表
-        var idiomNum = idiomList[idiomList.length - 1].idiomNum + 1
-        var myIdiom = {
-          objectId: idiomNum,
-          value: params.idiomValue,
-          creator: params.creator,
-          idiomNum: idiomNum
-        }
-        idiomList.push(myIdiom)
+        idiomList.push(idiom)
         that.setData({
           isLastCreator: true,
           canSend: false,
@@ -695,7 +689,7 @@ Page({
         })
         setTimeout(function () {
           that.setData({
-            toView: idiomNum
+            toView: idiom.objectId
           })
         }, 50)
         // 发送消息
