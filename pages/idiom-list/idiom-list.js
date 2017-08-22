@@ -43,35 +43,35 @@ Page({
     //     url: '/pages/sleep/sleep'
     //   })
     // } else {
-      this.data.id = options.id
-      var app = getApp()
-      if (!app.globalData.hasLogin) {
-        app.login(this.loginSuccess, this.updateUserSuccess)
-      } else {
-        this.setData({
-          hasUserInfo: app.globalData.hasUserInfo
-        })
-        util.showLoading()
-        this.getSequence()
-        this.getIdioms()
-      }
-      // 转发可获取转发目标信息
-      if (wx.showShareMenu) {
-        wx.showShareMenu({
-          withShareTicket: true
-        })
-      }
-      //检查客户端基础库 
-      wx.getSystemInfo({
-        success: function (res) {
-          // 从基础库1.3.0开始，才能使用 getUserInfo 的 button
-          if (parseFloat(res.SDKVersion.substring(0, 4)) >= 1.3) {
-            that.setData({
-              canGetUserInfo: true
-            })
-          }
-        }
+    this.data.id = options.id
+    var app = getApp()
+    if (!app.globalData.hasLogin) {
+      app.login(this.loginSuccess, this.updateUserSuccess)
+    } else {
+      this.setData({
+        hasUserInfo: app.globalData.hasUserInfo
       })
+      util.showLoading()
+      this.getSequence()
+      this.getIdioms()
+    }
+    // 转发可获取转发目标信息
+    if (wx.showShareMenu) {
+      wx.showShareMenu({
+        withShareTicket: true
+      })
+    }
+    //检查客户端基础库 
+    wx.getSystemInfo({
+      success: function (res) {
+        // 从基础库1.3.0开始，才能使用 getUserInfo 的 button
+        if (parseFloat(res.SDKVersion.substring(0, 4)) >= 1.3) {
+          that.setData({
+            canGetUserInfo: true
+          })
+        }
+      }
+    })
     // }
   },
 
@@ -678,24 +678,26 @@ Page({
           title: '创建成功'
         })
         that.data.InputIdiom = ""
+        // 更新列表
+        var idiomNum = idiomList[idiomList.length - 1].idiomNum + 1
+        var myIdiom = {
+          objectId: idiomNum,
+          value: params.idiomValue,
+          creator: params.creator,
+          idiomNum: idiomNum
+        }
+        idiomList.push(myIdiom)
         that.setData({
           isLastCreator: true,
           canSend: false,
-          inputValue: ""
+          inputValue: "",
+          idiomList: idiomList
         })
-        // 更新列表
-        // var myIdiom = {
-        //   value: params.idiomValue,
-        //   creator: params.creator,
-        //   idiomNum: idiomList.length + 1
-        // }
-        // idiomList.push(myIdiom)
-        // that.setData({
-        //   idiomList: idiomList
-        // })
-        that.data.currentPage = 0
-        that.data.hasNextPage = true
-        that.getIdioms()
+        setTimeout(function () {
+          that.setData({
+            toView: idiomNum
+          })
+        }, 50)
         // 发送消息
         mConversation.send(new TextMessage(that.data.inputIdiom))
       } else {
