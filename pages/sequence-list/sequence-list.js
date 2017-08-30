@@ -29,13 +29,13 @@ Page({
   onLoad: function () {
     var that = this
     var date = new Date()
-    // if (date.getHours() < 7 ||
-    //   (date.getHours() == 7 && date.getMinutes() < 30)) {
-    //   // 01:00 - 07:30 后台处于休眠
-    //   wx.redirectTo({
-    //     url: '/pages/sleep/sleep'
-    //   })
-    // } else {
+    if (date.getHours() < 7 ||
+      (date.getHours() == 7 && date.getMinutes() < 30)) {
+      // 01:00 - 07:30 后台处于休眠
+      wx.redirectTo({
+        url: '/pages/sleep/sleep'
+      })
+    } else {
       var app = getApp()
       app.login(this.loginSuccess, this.updateUserSuccess)
       // 显示转发按钮
@@ -46,14 +46,15 @@ Page({
       wx.getSystemInfo({
         success: function (res) {
           // 从基础库1.3.0开始，才能使用 getUserInfo 的 button
-          if (parseFloat(res.SDKVersion.substring(0, 4)) >= 1.3) {
+          if (res.SDKVersion != null &&
+            parseFloat(res.SDKVersion.substring(0, 4)) >= 1.3) {
             that.setData({
               canGetUserInfo: true
             })
           }
         }
       })
-    // }
+    }
   },
 
   /**

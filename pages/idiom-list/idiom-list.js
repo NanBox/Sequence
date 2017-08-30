@@ -36,43 +36,44 @@ Page({
   onLoad: function (options) {
     var that = this
     var date = new Date()
-    // if (date.getHours() < 7 ||
-    //   (date.getHours() == 7 && date.getMinutes() < 30)) {
-    //   // 01:00 - 07:30 后台处于休眠
-    //   wx.redirectTo({
-    //     url: '/pages/sleep/sleep'
-    //   })
-    // } else {
-    this.data.id = options.id
-    var app = getApp()
-    if (!app.globalData.hasLogin) {
-      app.login(this.loginSuccess, this.updateUserSuccess)
+    if (date.getHours() < 7 ||
+      (date.getHours() == 7 && date.getMinutes() < 30)) {
+      // 01:00 - 07:30 后台处于休眠
+      wx.redirectTo({
+        url: '/pages/sleep/sleep'
+      })
     } else {
-      this.setData({
-        hasUserInfo: app.globalData.hasUserInfo
-      })
-      util.showLoading()
-      this.getSequence()
-      this.getIdioms()
-    }
-    // 转发可获取转发目标信息
-    if (wx.showShareMenu) {
-      wx.showShareMenu({
-        withShareTicket: true
-      })
-    }
-    //检查客户端基础库 
-    wx.getSystemInfo({
-      success: function (res) {
-        // 从基础库1.3.0开始，才能使用 getUserInfo 的 button
-        if (parseFloat(res.SDKVersion.substring(0, 4)) >= 1.3) {
-          that.setData({
-            canGetUserInfo: true
-          })
-        }
+      this.data.id = options.id
+      var app = getApp()
+      if (!app.globalData.hasLogin) {
+        app.login(this.loginSuccess, this.updateUserSuccess)
+      } else {
+        this.setData({
+          hasUserInfo: app.globalData.hasUserInfo
+        })
+        util.showLoading()
+        this.getSequence()
+        this.getIdioms()
       }
-    })
-    // }
+      // 转发可获取转发目标信息
+      if (wx.showShareMenu) {
+        wx.showShareMenu({
+          withShareTicket: true
+        })
+      }
+      //检查客户端基础库 
+      wx.getSystemInfo({
+        success: function (res) {
+          // 从基础库1.3.0开始，才能使用 getUserInfo 的 button
+          if (res.SDKVersion != null &&
+            parseFloat(res.SDKVersion.substring(0, 4)) >= 1.3) {
+            that.setData({
+              canGetUserInfo: true
+            })
+          }
+        }
+      })
+    }
   },
 
   /**
@@ -482,7 +483,8 @@ Page({
         allIdiomList = idiomList.concat(that.data.idiomList)
       }
       var isLastCreator = false
-      if (allIdiomList[allIdiomList.length - 1].creator.id == user.id) {
+      if (allIdiomList != null &&
+        allIdiomList[allIdiomList.length - 1].creator.id == user.id) {
         isLastCreator = true
       }
       that.setData({
@@ -751,7 +753,7 @@ Page({
       title: "一起来玩成语接龙！",
       path: 'pages/idiom-list/idiom-list?id=' + this.data.id,
       success(res) {
-        if (res.shareTickets.length > 0) {
+        if (res.shareTickets != null && res.shareTickets.length > 0) {
           that.getShareInfo(res.shareTickets[0])
         }
       }

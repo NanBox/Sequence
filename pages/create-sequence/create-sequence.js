@@ -61,6 +61,12 @@ Page({
     }
     var that = this
     var user = getApp().globalData.user
+    if (user == null) {
+      wx.showToast({
+        title: '您还没有授权登录'
+      })
+      return
+    }
     var creator = {
       id: user.id,
       name: user.get("nickName"),

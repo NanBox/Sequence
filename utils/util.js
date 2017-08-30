@@ -25,7 +25,8 @@ function isChinese(str) {
 //显示加载提示框
 function showLoading() {
   wx.showLoading({
-    title: "加载中"
+    title: "加载中",
+    mask: true
   })
 }
 
