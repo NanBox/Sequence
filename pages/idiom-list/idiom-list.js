@@ -1,7 +1,5 @@
 const AV = require('../../libs/av-weapp-min')
-const TextMessage = require('../../libs/realtime.weapp.min.js').TextMessage
 const util = require('../../utils/util.js')
-var mConversation = null
 
 Page({
 
@@ -171,9 +169,6 @@ Page({
 
       if (!that.data.hasCheckRelation) {
         that.checkRelation()
-      }
-      if (mConversation == null) {
-        that.getClient()
       }
       wx.setNavigationBarTitle({
         title: sequence.get("title"),
@@ -372,78 +367,6 @@ Page({
     }
     userSequenceMap.save().then(userSequenceMap => {
       that.data.userSequenceMap = userSequenceMap
-    })
-  },
-
-  /**
-   * 连接实时通信
-   */
-  getClient: function () {
-    var client = getApp().globalData.client
-    if (client == null) {
-      var that = this
-      var user = getApp().globalData.user
-      if (user == null) {
-        return
-      }
-      var realtime = getApp().globalData.realtime
-      realtime.createIMClient(user.id).then(function (client) {
-        getApp().globalData.client = client
-        that.getConversation()
-      })
-    } else {
-      this.getConversation()
-    }
-  },
-
-  /**
-   * 建立实时通信对话
-   */
-  getConversation: function () {
-    var that = this
-    var client = getApp().globalData.client
-    var sequence = this.data.sequence
-    if (sequence.get("conversationId") != null &&
-      sequence.get("conversationId").length > 0) {
-      client.getConversation(sequence.get("conversationId"))
-        .then(function (conversation) {
-          mConversation = conversation
-          mConversation.join()
-          that.receiveMessage()
-        }, function (error) {
-          console.log("查询对话失败", error)
-        })
-    } else {
-      client.createConversation({
-        transient: true,
-      }).then(function (conversation) {
-        mConversation = conversation
-        mConversation.join()
-        that.receiveMessage()
-        sequence.set("conversationId", conversation.id)
-        sequence.save()
-      }, function (error) {
-        console.log("创建对话失败", error)
-      })
-    }
-  },
-
-  /**
-   * 接收消息
-   */
-  receiveMessage: function () {
-    var that = this
-    var sequence = this.data.sequence
-    var client = getApp().globalData.client
-    client.on('message', function (message, conversation) {
-      if (sequence.get("type") == "all" ||
-        (sequence.get("type") == "two" && sequence.get("imgList").length < 2)) {
-        that.getSequence()
-      }
-      getApp().globalData.refreshSequenceList = true
-      that.data.currentPage = 0
-      that.data.hasNextPage = true
-      that.getIdioms()
     })
   },
 
@@ -694,8 +617,6 @@ Page({
             toView: idiom.objectId
           })
         }, 50)
-        // 发送消息
-        mConversation.send(new TextMessage(that.data.inputIdiom))
       } else {
         wx.showModal({
           showCancel: false,
