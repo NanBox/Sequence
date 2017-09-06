@@ -56,7 +56,10 @@ App({
   updateUserInfo: function (userInfo, updateUserSuccess) {
     var that = this
     var user = this.globalData.user
-    if (user != null && user.get("nickName") != null && user.get("avatarUrl") != null &&
+    if (user == null) {
+      return
+    }
+    if (user.get("nickName") != null && user.get("avatarUrl") != null &&
       user.get("nickName") == userInfo.nickName && user.get("avatarUrl") == userInfo.avatarUrl) {
       that.globalData.hasUserInfo = true
       typeof updateUserSuccess == "function" && updateUserSuccess()

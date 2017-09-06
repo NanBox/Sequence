@@ -24,15 +24,19 @@ function isChinese(str) {
 
 //显示加载提示框
 function showLoading() {
-  wx.showLoading({
-    title: "加载中",
-    mask: true
-  })
+  if (wx.showLoading) {
+    wx.showLoading({
+      title: "加载中",
+      mask: true
+    })
+  }
 }
 
 //隐藏加载提示框
 function hideLoading() {
-  wx.hideLoading()
+  if (wx.hideLoading) {
+    wx.hideLoading()
+  }
 }
 
 module.exports = {
