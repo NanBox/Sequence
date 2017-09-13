@@ -34,7 +34,7 @@ Page({
   onLoad: function (options) {
     var that = this
     var date = new Date()
-    if (date.getHours() < 7 ||
+    if ((date.getHours() > 0 && date.getHours() < 7) ||
       (date.getHours() == 7 && date.getMinutes() < 30)) {
       // 01:00 - 07:30 后台处于休眠
       wx.redirectTo({
